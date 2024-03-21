@@ -8,6 +8,11 @@
 #include "playingCards.h"
 
 class Deck: PlayingCardsObject
+	cardCount = 0
+	playingCardClass = PlayingCard
+	suits = 0
+	ranks = 0
+
 	_deck = nil
 	_prng = nil
 	index = 0
@@ -59,21 +64,13 @@ class Deck: PlayingCardsObject
 	}
 
 	initializeDeck() {
-		local i, j, k, n, o, s;
+		local i, j, o;
 
-		_deck = new Vector(52);
-		s = 0x8000;
+		_deck = new Vector(cardCount);
 
-		n = 0;
-		for(j = 1; j <= 4; j++, s >>= 1) {
-			for(i = 1; i <= 13; i++) {
-				o = new PlayingCard(i, 5 - j);
-				k = i - 1;
-				o.val = primes[i] | (k << 8)
-					| s | (1 << (16 + k));
-				o.index = n;
-				n += 1;
-
+		for(j = 1; j <= suits; j++) {
+			for(i = 1; i <= ranks; i++) {
+				o = playingCardClass.createInstance(i, j);
 				_deck.append(o);
 			}
 		}

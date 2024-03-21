@@ -28,13 +28,13 @@ gameMain: GameMainDef
 	newGame() {
 		local deck, l, i;
 
-		deck = new Deck();
+		deck = new StandardDeck();
 		deck.shuffle();
 		l = deck.deal(5, players);
 		for(i = 1; i <= players; i++) {
 			"Player <<toString(i)>>\n ";
 			l[i].forEach(function(o) {
-				"\t<<gPlayingCardLongName(o)>>\n ";
+				"\t<<toString(o.getLongName())>>\n ";
 			});
 		}
 	}
