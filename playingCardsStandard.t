@@ -10,7 +10,6 @@
 class StandardPlayingCard: PlayingCard
 	val = nil
 	cardType = standardPlayingCards
-	foozle = 'foo'
 
 	primes = static [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ]
 
@@ -37,142 +36,20 @@ standardPlayingCards: PlayingCards
 	pokerCard'
 	'playing card'
 
+	cardClass = StandardPlayingCard
+
 	// Constants
-	shortSuit = static [ 'S', 'H', 'D', 'C' ]
-	symbolSuit = static [ '\u2660', '\u2665', '\u2666', '\u2663' ]
-	longSuit = static [ 'spades', 'hearts', 'diamonds', 'clubs' ]
-	shortRank = static [ '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J',
+	suitShort = static [ 'S', 'H', 'D', 'C' ]
+	suitSymbol = static [ '\u2660', '\u2665', '\u2666', '\u2663' ]
+	suitLong = static [ 'spades', 'hearts', 'diamonds', 'clubs' ]
+
+	rankShort = static [ '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J',
 		'Q', 'K', 'A' ]
-	longRank = static [ 'two', 'three', 'four', 'five', 'six', 'seven',
+	rankLong = static [ 'two', 'three', 'four', 'five', 'six', 'seven',
 		'eight', 'nine', 'ten', 'jack', 'queen', 'king', 'ace' ]
 
-	// Hooks for macros.
-	getShortRank(v) { return(shortRank[v]); }
-	getLongRank(v) { return(longRank[v]); }
-
-	// Try to figure out what rank the passed ID corresponds to.
-	// This is going to be from player input, and will work for
-	// figuring out "2H" and "two of hearts", for example.
-	getRank(id) {
-		local idx, tmp;
-
-		if(id == nil)
-			return(nil);
-
-		tmp = id.toUpper();
-		if((idx = shortRank.indexOf(tmp)) != nil)
-			return(idx);
-
-		tmp = id.toLower();
-		if((idx = longRank.indexOf(tmp)) != nil)
-			return(idx);
-
-		if((idx = toInteger(id)) == nil)
-			return(nil);
-
-		if((idx < 1) || (idx > 14))
-			return(nil);
-
-		return(idx);
-	}
-
-	// The same as above, only for suits instead of ranks
-	getSuit(id) {
-		local idx, tmp;
-
-		if(id == nil)
-			return(nil);
-
-		tmp = id.toUpper();
-		if((idx = shortSuit.indexOf(tmp)) != nil)
-			return(idx);
-
-		tmp = id.toLower();
-		if((idx = longSuit.indexOf(tmp)) != nil)
-			return(idx);
-
-		return(nil);
-	}
-
-	// Given a (probably player-supplied) text description of a card,
-	// try to figure out what card is named and return a PlayingCard
-	// instance of it
-	getCard(id) {
-		if(id == nil)
-			return(nil);
-
-		// if our "id" is already a PlayingCard instance, we're done
-		if(id.ofKind(PlayingCard))
-			return(id);
-
-		// try to convert the id into a card instance
-		return(getCardFromString(id));
-	}
-
-	// Try various ways to parse a string as a card name, returning
-	// a PlayingCard instance of the match, if any.
-	getCardFromString(id) {
-		local m;
-
-		// ID can't be nil.
-		if(id == nil)
-			return(nil);
-
-		// Convert the ID to upper case.
-		id = id.toUpper();
-
-		// Big ol' ugly regex of various ways to write out a card name.
-		m = id.findAll(R'(2|3|4|5|6|7|8|9|10|J|Q|K|A|JACK|QUEEN|KING|ACE){1}([ ]+OF[ ]+){0,1}(S|H|D|C|SPADES|HEARTS|DIAMONDS|CLUBS){1}', function(match, index, rank, conj, suit) {
-			// If we didn't match a rank and suit, we're stumped.
-			if((rank == nil) || (suit == nil))
-				return(nil);
-
-			// Canonicalize the rank and suit.
-			rank = getRank(rank);
-			suit = getSuit(suit);
-
-			// ...or die trying.
-			if((rank == nil) || (suit == nil))
-				return(nil);
-
-			// Return a PlayingCard instance of the given
-			// rank and suit.
-			return(new PlayingCard(rank, suit));
-		});
-
-		// We couldn't convert the string into anything.
-		if((m == nil) || (m.length() < 1))
-			return(nil);
-
-		// Should never happen.
-		return(m[1]);
-	}
-
-	// Given a PlayingCard object, return the short name ("2H") for it
-	getShortName(card) {
-		local r, s;
-
-		card = getCard(card);
-
-		r = shortRank[card.rank];
-		s = shortSuit[card.suit];
-
-		return(r + s);
-	}
-
-	// Given a PlayingCard object, return the long name ("two of hearts")
-	// for it
-	getLongName(card) {
-		local r, s;
-
-		card = getCard(card);
-if(card == nil) aioSay('nil card\n ');
-
-		r = longRank[card.rank];
-		s = longSuit[card.suit];
-
-		return(r + ' of ' + s);
-	}
+	//otherShort = static [ 'joker' ]
+	//otherLong = static [ 'joker' ]
 ;
 
 class StandardDeck: Deck

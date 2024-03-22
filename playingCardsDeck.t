@@ -12,6 +12,7 @@ class Deck: PlayingCardsObject
 	playingCardClass = PlayingCard
 	suits = 0
 	ranks = 0
+	others = 0
 
 	_deck = nil
 	_prng = nil
@@ -73,6 +74,10 @@ class Deck: PlayingCardsObject
 				o = playingCardClass.createInstance(i, j);
 				_deck.append(o);
 			}
+		}
+		for(i = 1; i <= others; i++) {
+			o = playingCardClass.createInstance(i, suits + 1);
+			_deck.append(o);
 		}
 	}
 ;
