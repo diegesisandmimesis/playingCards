@@ -147,6 +147,9 @@ class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
 	getLongRank(idx) { return(rankLong[idx]); }
 	getShortRank(idx) { return(rankShort[idx]); }
 
+	getLongSuit(idx) { return(suitLong[idx]); }
+	getShortSuit(idx) { return(suitShort[idx]); }
+
 	// Try various ways to parse a string as a card name, returning
 	// a PlayingCard instance of the match, if any.
 	getCardFromString(id) {

@@ -14,14 +14,13 @@ class PokerHandValue: PlayingCardsObject
 	value = nil	// abstract value of hand, number from 0 to 7462
 	rank = nil	// ordinal indicating kind of hand, from 1 to 9 
 
-	// Not set by evaluator, used by PokerHand.getRankDetails.  Identifies
-	// the card rank (not hand rank) of the cards that contributed to
-	// the hand rank.  So if you have a pair of 8s, high would be 9 (due
-	// to the card ranks counting from 2) and over and suit would be nil.
-	// A full house of aces over 8s would have high = 16 (ace) and
-	// over = 9 (8), and suit would be nil.  An 8-high straight flush
-	// in clubs would have high = 9, and suit would be 4 (because clubs are
-	// 4 in our arbitrary suit ordering, as defined in drawPokerDeck.t).
+	// Identifies the card rank (not hand rank) of the cards that
+	// contributed to the hand rank.  So if you have a pair of 8s, high
+	// would be 9 (due to the card ranks counting from 2) and over and
+	// suit would be nil. A full house of aces over 8s would have
+	// high = 16 (ace) and over = 9 (8), and suit would be nil.  An
+	// 8-high straight flush in clubs would have high = 9, and suit
+	// would be 4 (because clubs are 4 in our arbitrary suit ordering).
 	high = nil	// highest card(s) contributing to rank
 	over = nil	// next-highest card(s) contributing to rank
 	suit = nil	// suit if a flush/straight flush
@@ -95,30 +94,44 @@ class PokerHandValue: PlayingCardsObject
 	computeRankDetails(cards) {
 		local i, len, rankArray, suitArray, v, w;
 
+		// Rank array, to help us keep track of which rank(s) we
+		// have more than one of.
 		rankArray = new Vector(13);
 		rankArray.fillValue(0, 1, 13);
+
+		// Suit array, to help us keep track of how many cards of
+		// each suit we have.
 		suitArray = new Vector(4);
 		suitArray.fillValue(0, 1, 4);
+
+		// Populate the arrays.
 		cards.forEach(function(o) {
 			rankArray[o.rank] += 1;
 			suitArray[o.suit] += 1;
 		});
+
 		v = nil;
 		w = nil;
+
 		len = rankArray.length();
+
 		switch(getRank()) {
 			case 1:		// straight flush
 			case 5:		// straight
+				// Figure out the high card of a straight
 				for(i = len; i > 0 && !v; i--)
 					if(rankArray[i] > 0) v = i;
 				high = v;
 				break;
 			case 2:		// 4 of a kind
+				// Figure out what we have four of.
 				for(i = 1; i <= len && !v; i++)
 					if(rankArray[i] == 4) v = i;
 				high = v;
 				break;
 			case 3:		// full house
+				// Figure out which rank we have three of
+				// and which we have two of.
 				for(i = 1; i <= len && (!v || !w); i++) {
 					if(rankArray[i] == 3) v = i;
 					if(rankArray[i] == 2) w = i;
@@ -127,16 +140,19 @@ class PokerHandValue: PlayingCardsObject
 				over = w;
 				break;
 			case 4:		// flush
+				// Figure out which suit our flush is in.
 				for(i = 1; i <= suitArray.length(); i++)
 					if(suitArray[i] > 0) v = i;
 				suit = v;
 				break;
 			case 6:		// 3 of a kind
+				// Figure out which rank we have three of.
 				for(i = 1; i <= len && !v; i++)
 					if(rankArray[i] == 3) v = i;
 				high = v;
 				break;
 			case 7:		// 2 pair
+				// Figure out which two ranks our pairs are.
 				for(i = len; i > 0 && (!v || !w); i--) {
 					if(rankArray[i] == 2) {
 						if(!v) v = i;
@@ -147,12 +163,14 @@ class PokerHandValue: PlayingCardsObject
 				over = w;
 				break;
 			case 8:		// 1 pair
+				// Figure out what rank our pair is in.
 				for(i = len; i > 0 && !v; i--) {
 					if(rankArray[i] == 2) v = i;
 				}
 				high = v;
 				break;
 			case 9:		// nothing
+				// Figure out what our miserable high card is.
 				for(i = len; i > 0 && !v; i--) {
 					if(rankArray[i] == 1) v = i;
 				}
@@ -187,7 +205,8 @@ class PokerHandValue: PlayingCardsObject
 					+ 's over ' + c.getLongRank(over)
 					+ 's');
 			case 4:		// flush
-				return('a ' + type);
+				return('a ' + type + ' in '
+					+ c.getLongSuit(suit) + 's ');
 			case 5:		// straight
 				return('a ' + c.getLongRank(high)
 					+ '-high ' + type);
