@@ -12,7 +12,7 @@
 
 class Deck: PlayingCardsObject
 	cardCount = 0			// number of cards in the deck
-	playingCardClass = PlayingCard	// class for individual cards
+	cardClass = PlayingCard		// class for individual cards
 	suits = 0			// number of suits
 	ranks = 0			// number of ranks per suit
 	others = 0			// number of "other" cards
@@ -78,12 +78,12 @@ class Deck: PlayingCardsObject
 
 		for(j = 1; j <= suits; j++) {
 			for(i = 1; i <= ranks; i++) {
-				o = playingCardClass.createInstance(i, j);
+				o = cardClass.createInstance(i, j);
 				_deck.append(o);
 			}
 		}
 		for(i = 1; i <= others; i++) {
-			o = playingCardClass.createInstance(i, suits + 1);
+			o = cardClass.createInstance(i, suits + 1);
 			_deck.append(o);
 		}
 	}

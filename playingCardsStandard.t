@@ -1,6 +1,6 @@
 #charset "us-ascii"
 //
-// playingCards.t
+// playingCardsStandard.t
 //
 //	Definitions for standard 52-card French-suited decks.
 //
@@ -9,13 +9,12 @@
 
 #include "playingCards.h"
 
-class StandardPlayingCard: PlayingCard
-	val = nil
-	cardType = standardPlayingCards
+class StandardCard: PlayingCard
+	cardType = standardCards
 ;
 
-standardPlayingCards: PlayingCards
-	cardClass = StandardPlayingCard
+standardCards: PlayingCards
+	cardClass = StandardCard
 
 	// Constants
 	suitShort = static [ 'S', 'H', 'D', 'C' ]
@@ -32,5 +31,5 @@ class StandardDeck: Deck
 	cardCount = 52
 	suits = 4
 	ranks = 13
-	playingCardClass = StandardPlayingCard
+	cardClass = StandardCard
 ;

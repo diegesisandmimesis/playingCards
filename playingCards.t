@@ -144,6 +144,9 @@ class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
 		otherRegex = new RexPattern(txt);
 	}
 
+	getLongRank(idx) { return(rankLong[idx]); }
+	getShortRank(idx) { return(rankShort[idx]); }
+
 	// Try various ways to parse a string as a card name, returning
 	// a PlayingCard instance of the match, if any.
 	getCardFromString(id) {

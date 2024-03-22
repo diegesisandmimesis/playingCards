@@ -1,0 +1,11 @@
+-D LANGUAGE=en_us
+-D MESSAGESTYLE=neu
+-w-15001
+-Fy obj -Fo obj
+-Fs ../..
+-o games/handEvaluatorTest.t3
+-lib system
+-lib adv3/adv3
+-lib syslog/syslog
+-lib ../playingCards
+-source src/handEvaluatorTest.t

@@ -1,6 +1,6 @@
 #charset "us-ascii"
 //
-// playingCards.t
+// playingCardsTarot.t
 //
 //
 #include <adv3.h>
@@ -64,7 +64,7 @@ class TarotDeck: Deck
 	suits = 4
 	ranks = 14
 	others = 22
-	playingCardClass = TarotCard
+	cardClass = TarotCard
 
 	shuffle() {
 		inherited();
