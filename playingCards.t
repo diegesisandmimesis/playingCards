@@ -2,6 +2,8 @@
 //
 // playingCards.t
 //
+//	A TADS3/adv3 module implementing playing cards.
+//
 #include <adv3.h>
 #include <en_us.h>
 
@@ -15,14 +17,20 @@ playingCardsModuleID: ModuleID {
         listingOrder = 99
 }
 
+// Base object class for the module.
 class PlayingCardsObject: Syslog syslogID = 'PlayingCards';
 
+// Base playing card class.
+// This is an abstract class for individual cards.  Intended to be
+// extended by subclassing for each particular type of cards (standard
+// 52-card playing cards, tarot cards, and so on).
 class PlayingCard: PlayingCardsObject
-	rank = nil
-	suit = nil
+	rank = nil		// the pip value of the card
+	suit = nil		// the card's suit
 	index = nil
 
-	cardType = nil
+	cardType = nil		// reference to the PlayingCards instance for
+				// our "type"
 
 	construct(r?, s?, idx?) {
 		rank = r;
@@ -30,29 +38,75 @@ class PlayingCard: PlayingCardsObject
 		index = idx;
 	}
 
+	// Returns boolean true of the arg is a playing card and its
+	// rank and suit equal ours.
 	equals(c) {
 		if((c == nil) || !c.ofKind(PlayingCard))
 			return(nil);
 		return((c.suit == suit) && (c.rank == rank));
 	}
 
+	// Returns the long and short names.  For example "two of clubs"
+	// and "2C", respectively.
 	getLongName() { return(cardType ? cardType.getLongName(self) : nil); }
 	getShortName() { return(cardType ? cardType.getShortName(self) : nil); }
 ;
 
 class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
-	cardClass = PlayingCard
+	cardClass = PlayingCard		// PlayingCard class our cards use
 
-	suitShort = perInstance([])
-	suitLong = perInstance([])
-	rankShort = perInstance([])
-	rankLong = perInstance([])
-	otherRank = perInstance([])
-	otherShort = perInstance([])
-	otherLong = perInstance([])
+	suitShort = perInstance([])	// single letter suit names
+	suitLong = perInstance([])	// single word suit names
+	rankShort = perInstance([])	// single number/letter rank
+	rankLong = perInstance([])	// single word rank
+	otherRank = perInstance([])	// rank for "other" cards
+	otherShort = perInstance([])	// single word name of "other" cards
+	otherLong = perInstance([])	// full name of "other" cards
 
-	rankAndSuitRegex = nil
-	otherRegex = nil
+	rankAndSuitRegex = nil		// compiled regex for rank and suit
+	otherRegex = nil		// compiled regex for "other" cards
+
+	// Set up our vocabulary to catch all plausible card descriptions
+	// (for cards of our card class).
+	initializeVocab() {
+		local txt;
+
+		inherited();
+
+		// Set up weak tokens.
+		txt = new StringBuffer();
+		txt.append(rankShort.join(' '));
+		txt.append(rankLong.join(' '));
+		weakTokens = toString(txt).split(' ');
+
+		// Add the suit names as nouns.
+		suitShort.forEach(function(o) {
+			cmdDict.addWord(self, o, &noun);
+		});
+		suitLong.forEach(function(o) {
+			cmdDict.addWord(self, o, &noun);
+		});
+
+		// Add the short names ("2C", "3H", and so on) as nouns.
+		suitShort.forEach(function(s) {
+			rankShort.forEach(function(r) {
+				cmdDict.addWord(self, '<<r>><<s>>', &noun);
+			});
+		});
+
+		// Add vocabulary of "other" cards ("Joker", the major
+		// arcana in a tarot deck, and so on).
+		otherShort.forEach(function(o) {
+			cmdDict.addWord(self, o, &noun);
+		});
+		otherLong.forEach(function(o) {
+			o.split(' ').forEach(function(w) {
+				if(w.toLower() == 'the')
+					return;
+				cmdDict.addWord(self, w, &noun);
+			});
+		});
+	}
 
 	// Build a regex to capture the rank and suit from a string.
 	initRankAndSuitRegex() {
@@ -111,6 +165,8 @@ class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
 		return(nil);
 	}
 
+	// Returns the matching card object if the argument is a string
+	// describing a rank-and-suit card ("two of clubs", "3H", and so on).
 	matchRankAndSuit(id) {
 		local m;
 
@@ -142,6 +198,9 @@ class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
 		return(nil);
 	}
 
+	// Returns a card object if the argument is a string describing
+	// an "other" card in the deck ("Joker", "Justice", "The High
+	// Priestess", and so on).
 	matchOther(id) {
 		local m;
 
@@ -213,6 +272,7 @@ class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
 		return(nil);
 	}
 
+	// As above, but tries to match the "other" cards.
 	getOther(id) {
 		local idx, tmp;
 
@@ -237,11 +297,11 @@ class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
 		if(id == nil)
 			return(nil);
 
-		// if our "id" is already a PlayingCard instance, we're done
+		// if our "ID" is already a PlayingCard instance, we're done
 		if(id.ofKind(PlayingCard))
 			return(id);
 
-		// try to convert the id into a card instance
+		// try to convert the ID into a card instance
 		return(getCardFromString(id));
 	}
 

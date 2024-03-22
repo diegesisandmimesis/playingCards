@@ -2,25 +2,27 @@
 //
 // playingCardsDeck.t
 //
+//	Generic class for handling card decks, including shuffling and
+//	dealing.
+//
 #include <adv3.h>
 #include <en_us.h>
 
 #include "playingCards.h"
 
 class Deck: PlayingCardsObject
-	cardCount = 0
-	playingCardClass = PlayingCard
-	suits = 0
-	ranks = 0
-	others = 0
+	cardCount = 0			// number of cards in the deck
+	playingCardClass = PlayingCard	// class for individual cards
+	suits = 0			// number of suits
+	ranks = 0			// number of ranks per suit
+	others = 0			// number of "other" cards
 
-	_deck = nil
-	_prng = nil
-	index = 0
-
-	primes = static [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ]
+	_deck = nil			// array containing the cards
+	_prng = nil			// PRNG instance
+	index = 0			// current card in the deck
 
 	construct(p?) {
+		// Make sure we have a PRNG.
 		_prng = (p ? p : new PlayingCardsPRNG());
 	}
 
@@ -40,6 +42,7 @@ class Deck: PlayingCardsObject
 		return(r);
 	}
 
+	// Draw an individual card from the top of the deck.
 	draw() {
 		if((_deck == nil) || (_deck.length() < 1))
 			return(nil);
@@ -49,6 +52,7 @@ class Deck: PlayingCardsObject
 		return(_deck[index]);
 	}
 
+	// Shuffle, using Fischer/Yates.
 	shuffle() {
 		local i, k, tmp;
 
@@ -64,6 +68,9 @@ class Deck: PlayingCardsObject
 		index = 0;
 	}
 
+	// Initialize the deck.
+	// This creates a deck array in "manufacturer" order;  that is,
+	// all the cards in order, unshuffled.
 	initializeDeck() {
 		local i, j, o;
 

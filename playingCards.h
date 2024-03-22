@@ -14,10 +14,4 @@
 #error "syslog should be in /home/user/tads/syslog ."
 #endif // SYSLOG_H
 
-#define gPlayingCard(txt) (playingCardNamed.getCard(txt))
-#define gPlayingCardShortName(card) (playingCardNames.getShortName(card))
-#define gPlayingCardLongName(card) (playingCardNames.getLongName(card))
-#define gPlayingCardShortRank(idx) (playingCardNames.getShortRank(idx))
-#define gPlayingCardLongRank(idx) (playingCardNames.getLongRank(idx))
-
 #define PLAYING_CARDS_H
