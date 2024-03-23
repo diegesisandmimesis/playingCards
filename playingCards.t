@@ -76,6 +76,7 @@ class PlayingCards: MultiLoc, Vaporous, PlayingCardsObject
 		// Set up weak tokens.
 		txt = new StringBuffer();
 		txt.append(rankShort.join(' '));
+		txt.append(' ');
 		txt.append(rankLong.join(' '));
 		weakTokens = toString(txt).split(' ');
 

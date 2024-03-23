@@ -10,6 +10,8 @@
 
 #include "playingCards.h"
 
+#ifdef PLAYING_CARDS_POKER
+
 modify pokerHandEvaluator
 	flushes = static [
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1930,3 +1932,5 @@ modify pokerHandEvaluator
 
 	primes = static [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ]
 ;
+
+#endif // PLAYING_CARDS_POKER

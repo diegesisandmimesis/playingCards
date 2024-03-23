@@ -15,6 +15,8 @@
 
 #include "playingCards.h"
 
+#ifdef PLAYING_CARDS_POKER
+
 // Poker hand evaluator.
 pokerHandEvaluator: PlayingCardsObject
 	// Returns the numeric value of the given five-card hand.
@@ -73,3 +75,5 @@ pokerHandEvaluator: PlayingCardsObject
 		return(nil);
 	}
 ;
+
+#endif // PLAYING_CARDS_POKER

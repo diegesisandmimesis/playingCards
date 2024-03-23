@@ -8,3 +8,4 @@ source: playingCardsPokerHandValue.t
 source: playingCardsPokerHandEvaluator.t
 source: playingCardsPokerHandEvaluatorData.t
 source: playingCardsTarot.t
+source: playingCardsHanafuda.t
