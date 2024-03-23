@@ -9,3 +9,4 @@ source: playingCardsPokerHandEvaluator.t
 source: playingCardsPokerHandEvaluatorData.t
 source: playingCardsTarot.t
 source: playingCardsHanafuda.t
+source: playingCardsSpanish.t
