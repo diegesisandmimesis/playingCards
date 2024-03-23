@@ -6,3 +6,7 @@ source: playingCardsStandard.t
 source: playingCardsTarot.t
 source: playingCardsHanafuda.t
 source: playingCardsSpanish.t
+source: playingCardsActions.t
+source: playingCardsActor.t
+source: playingCardsHand.t
+source: playingCardsMsg.t

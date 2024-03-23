@@ -22,13 +22,13 @@
 #include "playingCards.h"
 
 versionInfo: GameID;
-gameMain: GameMainDef
-	initialPlayerChar = me
+gameMain: GameMainDef initialPlayerChar = me;
 
-	newGame() {
-		runGame(true);
-	}
-;
-
-startRoom: Room 'Void' "This is a featureless void. ";
+startRoom: Room 'Void' "This is a featureless void. "
+	north = otherRoom;
 +me: Person;
++pebble: Thing '(small) (round) pebble' 'pebble' "A small, round pebble. ";
++cards: StandardDeck;
+
+otherRoom: Room 'Other Room' "This is the other room. "
+	south = startRoom;

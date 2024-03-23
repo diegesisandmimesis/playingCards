@@ -10,7 +10,9 @@
 
 #include "playingCards.h"
 
-class Deck: PlayingCardsObject
+class Deck: PlayingCardsObject, Thing
+	'deck (of) (card)/cards' 'deck of cards'
+	"It's a deck of playing cards. "
 	cardCount = 0			// number of cards in the deck
 	cardClass = PlayingCard		// class for individual cards
 	suits = 0			// number of suits
@@ -21,15 +23,38 @@ class Deck: PlayingCardsObject
 	_prng = nil			// PRNG instance
 	index = 0			// current card in the deck
 
+	_hands = perInstance(new Vector())
+
+	vocabLikelihood() {
+		if(gAction && gAction.ofKind(DealAction))
+			return(10);
+		return(0);
+	}
+
 	construct(p?) {
 		// Make sure we have a PRNG.
 		_prng = (p ? p : new PlayingCardsPRNG());
+	}
+
+	getPRNG() {
+		if(_prng == nil)
+			_prng = new PlayingCardsPRNG();
+		return(_prng);
+	}
+
+	cardsLeft() {
+		if(_deck == nil)
+			initializeDeck();
+		return(_deck.length - index);
 	}
 
 	// Deal n cards to m players.
 	// Return value is an m-element array of n-element arrays.
 	deal(n, m) {
 		local i, j, r;
+
+		if(cardsLeft() < (n * m))
+			return(nil);
 
 		r = new Vector(m, m);
 		for(i = 1; i <= n; i++) {
@@ -45,7 +70,7 @@ class Deck: PlayingCardsObject
 	// Draw an individual card from the top of the deck.
 	draw() {
 		if((_deck == nil) || (_deck.length() < 1))
-			return(nil);
+			initializeDeck();
 		index += 1;
 		if(index > _deck.length)
 			return(nil);
@@ -59,7 +84,7 @@ class Deck: PlayingCardsObject
 		if(_deck == nil)
 			initializeDeck();
 		for(i = _deck.length; i >= 1; i--) {
-			k = _prng.random(1, i);
+			k = getPRNG().random(1, i);
 			tmp = _deck[i];
 			_deck[i] = _deck[k];
 			_deck[k] = tmp;
@@ -86,5 +111,59 @@ class Deck: PlayingCardsObject
 			o = cardClass.createInstance(i, suits + 1);
 			_deck.append(o);
 		}
+
+		index = 0;
+	}
+
+	dobjFor(Shuffle) {
+		verify() {}
+		action() {
+			shuffle();
+			defaultReport(&okayShuffle);
+		}
+	}
+
+	dobjFor(Deal) {
+		verify() {
+			local n;
+
+			if(gAction.numMatch == nil)
+				illogical(&cantDealNoCount);
+
+			n = gAction.numMatch.getval();
+			if(n > cardCount)
+				illogical(&cantDealNotThatManyCards, n,
+					cardCount);
+			if(n > cardsLeft()) {
+				illogicalNow(&cantDealNotEnoughCards, n);
+			}
+		}
+		action() {
+			_deal(gAction.numMatch.getval());
+		}
+	}
+
+	addHand(v) { _hands.appendUnique(v); v.setDeck(self); }
+	removeHand(v) { _hands.removeElement(v); }
+	clearHands() { _hands.setLength(0); }
+
+	_deal(n) { _dealToSelf(n); }
+
+	_dealToSelf(n) {
+		local hand;
+
+		if(n == nil) {
+			reportFailure(&cantDealNoCount);
+			return;
+		}
+		hand = gActor.getPlayingCardsHand();
+		if(hand.location != gActor)
+			hand.moveInto(gActor);
+
+		hand.addCards(deal(n, 1)[1]);
+
+		addHand(hand);
+
+		defaultReport(&okayDeal, n);
 	}
 ;
