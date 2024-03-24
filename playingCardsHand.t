@@ -75,21 +75,30 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	}
 
 	getCard(id) {
-		if(_deck == nil)
+		if(_deck == nil) {
 			return(nil);
+		}
+
 		return(_deck.getCard(id));
 	}
 
 	getCardIndex(id) {
-		local c;
+		local c, i;
 
-		if(_cards == nil)
+		if(_cards == nil) {
 			return(nil);
+		}
 
-		if((c = getCard(id)) == nil)
+		if((c = getCard(id)) == nil) {
 			return(nil);
+		}
 
-		return(_cards.indexOf(c));
+		for(i = 1; i <= _cards.length; i++) {
+			if(c.equals(_cards[i]))
+				return(i);
+		}
+
+		return(nil);
 	}
 
 	hasCard(id) { return(getCardIndex(id) != nil); }

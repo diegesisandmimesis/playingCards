@@ -9,9 +9,16 @@
 #include "playingCards.h"
 
 modify playerActionMessages
+	invalidCardName(n) {
+		return('The story tried to interpret <q><<toString(n)>></q> as
+			the name of a card but failed. ');
+	}
+
 	cantDiscardThat = '{You/He} can\'t discard that. '
 
-	cantExamineNoCard = '{You/He} can\'t see that here. '
+	cantExamineNoCard(txt) {
+		return('{You/He} see{s} no <<txt>> here. ');
+	}
 
 	cantUseSingleCard = '{You/He} can\'t do anything with the individual
 		cards. '

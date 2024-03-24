@@ -37,6 +37,8 @@ class Deck: PlayingCardsObject, Thing
 	playingCardUnthingClass = PlayingCardUnthing
 	playingCardsHandUnthingClass = PlayingCardsHandUnthing
 
+	_cardTypeInstance = nil
+
 	vocabLikelihood() {
 		if(gAction && gAction.ofKind(DealAction))
 			return(10);
@@ -106,11 +108,16 @@ class Deck: PlayingCardsObject, Thing
 	}
 
 	initializeThing() {
+		local obj;
+
 		inherited();
 
 		playingCardUnthingClass.createInstance().moveInto(self);
 		playingCardsHandUnthingClass.createInstance().moveInto(self);
-		cardType.createInstance().moveInto(self);
+
+		obj = cardType.createInstance();
+		obj.moveInto(self);
+		_cardTypeInstance = obj;
 	}
 
 	getCardClass() {
@@ -197,13 +204,16 @@ class Deck: PlayingCardsObject, Thing
 			return;
 		}
 		hand.addCards(l[1]);
+		hand.setDeck(self);
 
 		defaultReport(&okayDeal, n);
 	}
 
 	getCard(id) {
-		if(cardType == nil)
+		if(_cardTypeInstance == nil) {
 			return(nil);
-		return(cardType.getCard(id));
+		}
+
+		return(_cardTypeInstance.getCard(id));
 	}
 ;

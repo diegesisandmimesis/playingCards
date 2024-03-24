@@ -35,7 +35,16 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		txt.append(rankShort.join(' '));
 		txt.append(' ');
 		txt.append(rankLong.join(' '));
+		txt.append(' of');
 		weakTokens = toString(txt).split(' ');
+
+		rankShort.forEach(function(o) {
+			cmdDict.addWord(self, o, &noun);
+		});
+		rankLong.forEach(function(o) {
+			cmdDict.addWord(self, o, &noun);
+		});
+		cmdDict.addWord(self, 'of', &noun);
 
 		// Add the suit names as nouns.
 		suitShort.forEach(function(o) {
@@ -44,6 +53,7 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		suitLong.forEach(function(o) {
 			cmdDict.addWord(self, o, &noun);
 		});
+		cmdDict.addWord(self, 'of', &noun);
 
 		// Add the short names ("2C", "3H", and so on) as nouns.
 		suitShort.forEach(function(s) {
@@ -341,12 +351,18 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 	dobjFor(Examine) {
 		verify() {}
 		check() {
-			local m;
+			local c, m;
 
 			if((m = getFirstPlayingCard()) == nil)
 				return;
-			if(!gActor.hasPlayingCard(m)) {
-				reportFailure(&cantExamineNoCard);
+
+			if((c = getCard(m)) == nil) {
+				reportFailure(&invalidCardName, m);
+				exit;
+			}
+			if(!gActor.hasPlayingCard(c)) {
+				reportFailure(&cantExamineNoCard,
+					c.getLongName());
 				exit;
 			}
 		}
