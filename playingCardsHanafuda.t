@@ -9,11 +9,12 @@
 #include "playingCards.h"
 
 class HanafudaCard: PlayingCard
-	cardType = hanafudaCards
+	cardType = HanafudaCardType
 ;
 
-hanafudaCards: PlayingCards
+class HanafudaCardType: PlayingCardType
 	cardClass = HanafudaCard
+	deckClass = HanafudaDeck
 
 	suitShort = static [ '', '', '', '', '', '', '', '', '', '', '', '' ]
 	suitLong = static [ '', '', '', '', '', '', '', '', '', '', '', '' ]
@@ -118,5 +119,5 @@ class HanafudaDeck: Deck
 	cardCount = 48
 	suits = 12
 	ranks = 4
-	cardClass = HanafudaCard
+	cardType = HanafudaCardType
 ;

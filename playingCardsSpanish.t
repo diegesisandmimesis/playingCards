@@ -10,11 +10,12 @@
 #include "playingCards.h"
 
 class SpanishCard: PlayingCard
-	cardType = spanishCards
+	cardType = SpanishCardType
 ;
 
-spanishCards: PlayingCards
+class SpanishCardType: PlayingCardType
 	cardClass = SpanishCard
+	cardDeck = SpanishDeck
 
 	// Constants
 	suitShort = static [ 'E', 'C', 'O', 'B' ]
@@ -29,5 +30,5 @@ class SpanishDeck: Deck
 	cardCount = 40
 	suits = 4
 	ranks = 10
-	cardClass = SpanishCard
+	cardType = SpanishCardType
 ;

@@ -9,6 +9,10 @@
 #include "playingCards.h"
 
 modify playerActionMessages
+	cantDiscardThat = '{You/He} can\'t discard that. '
+
+	cantExamineNoCard = '{You/He} can\'t see that here. '
+
 	cantUseSingleCard = '{You/He} can\'t do anything with the individual
 		cards. '
 	cantTakeSingleCard = '{You/He} can\'t take individual cards.  Maybe

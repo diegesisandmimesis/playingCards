@@ -31,10 +31,11 @@ gameMain: GameMainDef
 	]
 
 	newGame() {
-		local c;
+		local c, p;
 
+		p = new TarotCardType();
 		_tests.forEach(function(o) {
-			if((c = tarotCards.getCardFromString(o)) == nil) {
+			if((c = p.getCardFromString(o)) == nil) {
 				"failed to resolve <q><<o>></q>\n ";
 				return;
 			}

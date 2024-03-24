@@ -19,4 +19,6 @@ modify Actor
 
 		return(playingCardsHand);
 	}
+
+	hasPlayingCard(id) { return(getPlayingCardsHand().hasCard(id)); }
 ;

@@ -23,7 +23,7 @@ class Deck: PlayingCardsObject, Thing
 	'deck (of) (card)/cards' 'deck of cards'
 	"It's a deck of playing cards. "
 	cardCount = 0			// number of cards in the deck
-	cardClass = PlayingCard		// class for individual cards
+	cardType = nil			// class for individual cards
 	suits = 0			// number of suits
 	ranks = 0			// number of ranks per suit
 	others = 0			// number of "other" cards
@@ -110,24 +110,34 @@ class Deck: PlayingCardsObject, Thing
 
 		playingCardUnthingClass.createInstance().moveInto(self);
 		playingCardsHandUnthingClass.createInstance().moveInto(self);
+		cardType.createInstance().moveInto(self);
+	}
+
+	getCardClass() {
+		if(cardType == nil)
+			return(nil);
+		return(cardType.cardClass);
 	}
 
 	// Initialize the deck.
 	// This creates a deck array in "manufacturer" order;  that is,
 	// all the cards in order, unshuffled.
 	initializeDeck() {
-		local i, j, o;
+		local cls, i, j, o;
 
+		if((cls = getCardClass()) == nil)
+			return;
+			
 		_deck = new Vector(cardCount);
 
 		for(j = 1; j <= suits; j++) {
 			for(i = 1; i <= ranks; i++) {
-				o = cardClass.createInstance(i, j);
+				o = cls.createInstance(i, j);
 				_deck.append(o);
 			}
 		}
 		for(i = 1; i <= others; i++) {
-			o = cardClass.createInstance(i, suits + 1);
+			o = cls.createInstance(i, suits + 1);
 			_deck.append(o);
 		}
 
@@ -189,5 +199,11 @@ class Deck: PlayingCardsObject, Thing
 		hand.addCards(l[1]);
 
 		defaultReport(&okayDeal, n);
+	}
+
+	getCard(id) {
+		if(cardType == nil)
+			return(nil);
+		return(cardType.getCard(id));
 	}
 ;

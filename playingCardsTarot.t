@@ -9,11 +9,11 @@
 #include "playingCards.h"
 
 class TarotCard: PlayingCard
-	cardType = tarotCards
+	cardType = TarotCardType
 	reversed = nil
 ;
 
-tarotCards: PlayingCards
+class TarotCardType: PlayingCardType
 	cardClass = TarotCard
 
 	suitShort = static [ 'S', 'C', 'P', 'W' ]
@@ -64,7 +64,7 @@ class TarotDeck: Deck
 	suits = 4
 	ranks = 14
 	others = 22
-	cardClass = TarotCard
+	cardType = TarotCardType
 
 	shuffle() {
 		inherited();

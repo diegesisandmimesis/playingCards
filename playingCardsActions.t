@@ -33,3 +33,19 @@ modify Thing
 		verify() { illogical(&cantDealThat); }
 	}
 ;
+
+DefineTAction(Discard);
+VerbRule(Discard)
+	'discard' dobjList
+	: DiscardAction
+	verbPhrase = 'discard/discarding (what)'
+;
+
+modify Thing
+	dobjFor(Discard) {
+		verify() {
+			dangerous;
+			illogical(&cantDiscardThat);
+		}
+	}
+;

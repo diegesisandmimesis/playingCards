@@ -32,14 +32,14 @@ gameMain: GameMainDef
 	]
 
 	newGame() {
-		local c;
+		local c, p;
 
+		p = new HanafudaCardType();
 		_tests.forEach(function(o) {
-			if((c = hanafudaCards.getCardFromString(o)) == nil) {
+			if((c = p.getCardFromString(o)) == nil) {
 				"failed to resolve <q><<o>></q>\n ";
 				return;
 			}
-aioSay('rank = <<toString(c.rank)>>, suit = <<toString(c.suit)>>\n ');
 			"<<o>> -> <<c.getLongName()>>\n ";
 		});
 	}

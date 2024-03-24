@@ -73,4 +73,24 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	setDeck(v) {
 		_deck = v;
 	}
+
+	getCard(id) {
+		if(_deck == nil)
+			return(nil);
+		return(_deck.getCard(id));
+	}
+
+	getCardIndex(id) {
+		local c;
+
+		if(_cards == nil)
+			return(nil);
+
+		if((c = getCard(id)) == nil)
+			return(nil);
+
+		return(_cards.indexOf(c));
+	}
+
+	hasCard(id) { return(getCardIndex(id) != nil); }
 ;

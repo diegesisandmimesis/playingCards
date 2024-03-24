@@ -32,10 +32,12 @@ gameMain: GameMainDef
 	]
 
 	newGame() {
-		local c;
+		local c, p;
+
+		p = new StandardCardType();
 
 		_tests.forEach(function(o) {
-			if((c = standardPlayingCards.getCardFromString(o)) == nil) {
+			if((c = p.getCardFromString(o)) == nil) {
 				"failed to resolve <q><<o>></q>\n ";
 				return;
 			}

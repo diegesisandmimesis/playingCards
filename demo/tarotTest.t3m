@@ -6,5 +6,6 @@
 -lib system
 -lib adv3/adv3
 -lib syslog/syslog
+-lib personalThing/personalThing
 -lib ../playingCards
 -source src/tarotTest.t
