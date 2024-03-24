@@ -9,6 +9,13 @@
 #include "playingCards.h"
 
 modify playerActionMessages
+	cantUseSingleCard = '{You/He} can\'t do anything with the individual
+		cards. '
+	cantTakeSingleCard = '{You/He} can\'t take individual cards.  Maybe
+		try dealing a hand instead? '
+
+	cantUseNoHand = '{You/he} haven\'t been dealt a hand. '
+
 	cantShuffleThat = '{You/He} can\'t shuffle that. '
 	okayShuffle = '{You/He} shuffle{s} the cards. '
 

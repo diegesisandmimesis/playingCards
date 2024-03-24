@@ -10,6 +10,15 @@
 
 #include "playingCards.h"
 
+class PlayingCardUnthing: Unthing '(single) (individual) card' 'card'
+	notHereMsg = playerActionMessages.cantUseSingleCard
+	dobjFor(Take) { verify() { illogical(&cantTakeSingleCard); } }
+;
+
+class PlayingCardsHandUnthing: Unthing '(playing) (card) hand/cards' 'cards'
+	notHereMsg = playerActionMessages.cantUseNoHand
+;
+
 class Deck: PlayingCardsObject, Thing
 	'deck (of) (card)/cards' 'deck of cards'
 	"It's a deck of playing cards. "
@@ -24,6 +33,9 @@ class Deck: PlayingCardsObject, Thing
 	index = 0			// current card in the deck
 
 	_hands = perInstance(new Vector())
+
+	playingCardUnthingClass = PlayingCardUnthing
+	playingCardsHandUnthingClass = PlayingCardsHandUnthing
 
 	vocabLikelihood() {
 		if(gAction && gAction.ofKind(DealAction))
@@ -93,6 +105,13 @@ class Deck: PlayingCardsObject, Thing
 		index = 0;
 	}
 
+	initializeThing() {
+		inherited();
+
+		playingCardUnthingClass.createInstance().moveInto(self);
+		playingCardsHandUnthingClass.createInstance().moveInto(self);
+	}
+
 	// Initialize the deck.
 	// This creates a deck array in "manufacturer" order;  that is,
 	// all the cards in order, unshuffled.
@@ -127,8 +146,10 @@ class Deck: PlayingCardsObject, Thing
 		verify() {
 			local n;
 
-			if(gAction.numMatch == nil)
+			if(gAction.numMatch == nil) {
 				illogical(&cantDealNoCount);
+				return;
+			}
 
 			n = gAction.numMatch.getval();
 			if(n > cardCount)
@@ -147,22 +168,25 @@ class Deck: PlayingCardsObject, Thing
 	removeHand(v) { _hands.removeElement(v); }
 	clearHands() { _hands.setLength(0); }
 
-	_deal(n) { _dealToSelf(n); }
+	_deal(n) { dealHandFor(n, gActor); }
 
-	_dealToSelf(n) {
-		local hand;
+	dealHandFor(n, actor) {
+		local hand, l;
 
 		if(n == nil) {
 			reportFailure(&cantDealNoCount);
 			return;
 		}
-		hand = gActor.getPlayingCardsHand();
-		if(hand.location != gActor)
-			hand.moveInto(gActor);
+		hand = actor.getPlayingCardsHand();
+		if(hand.location != actor)
+			hand.moveInto(actor);
 
-		hand.addCards(deal(n, 1)[1]);
-
-		addHand(hand);
+		if((l = deal(n, 1)) == nil) {
+			reportFailure(&cantDealNotThatManyCards, n,
+				cardsLeft());
+			return;
+		}
+		hand.addCards(l[1]);
 
 		defaultReport(&okayDeal, n);
 	}

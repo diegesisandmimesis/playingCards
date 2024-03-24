@@ -19,7 +19,7 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	isProperName = true
 	isPlural = true
 	isListedInInventory = true
-	isListedInContents = nil
+	//isListedInContents = nil
 	vocabLikelihood() {
 		if(gAction && gAction.ofKind(DealAction))
 			return(-30);
@@ -31,7 +31,7 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	addCards(ar) { _cards += ar; }
 	clearCards() { _cards.setLength(0); }
 
-	playingCardCheck() { return(getCarryingActor() == gActor); }
+	playingCardCheck() { return(owner == gActor); }
 
 	dobjFor(Examine) {
 		action() {

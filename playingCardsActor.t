@@ -12,8 +12,10 @@ modify Actor
 	playingCardsHand = nil
 
 	getPlayingCardsHand() {
-		if(playingCardsHand == nil)
+		if(playingCardsHand == nil) {
 			playingCardsHand = new PlayingCardsHand();
+			playingCardsHand.owner = self;
+		}
 
 		return(playingCardsHand);
 	}
