@@ -11,3 +11,4 @@ source: playingCardsActions.t
 source: playingCardsActor.t
 source: playingCardsHand.t
 source: playingCardsMsg.t
+source: playingCardsPreCondition.t

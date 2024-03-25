@@ -16,7 +16,10 @@ modify playerActionMessages
 
 	cantDiscardThat = '{You/He} can\'t discard that. '
 
-	cantExamineNoCard(txt) {
+	cantUseHandNotHolding = '{You/He} can\'t do anything with {your/his}
+		cards because {you/he} {are}n\'t holding them. '
+
+	cantNoCard(txt) {
 		return('{You/He} see{s} no <<txt>> here. ');
 	}
 

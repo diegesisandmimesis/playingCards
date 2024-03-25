@@ -116,7 +116,6 @@ class Deck: PlayingCardsObject, Thing
 		playingCardsHandUnthingClass.createInstance().moveInto(self);
 
 		obj = cardType.createInstance();
-		obj.moveInto(self);
 		_cardTypeInstance = obj;
 	}
 

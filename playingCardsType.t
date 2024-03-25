@@ -9,6 +9,8 @@
 #include "playingCards.h"
 
 class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
+	initialLocationClass = Room
+
 	cardClass = PlayingCard		// PlayingCard class our cards use
 	deckClass = Deck
 
@@ -336,35 +338,57 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		return(inherited(origTokens, adjustedTokens));
 	}
 
-	dobjFor(Discard) {
-		verify() { dangerous; }
-		check() {
-		}
-	}
-
 	getFirstPlayingCard() {
 		if(playingCardsMatchList.length < 1)
 			return(nil);
 		return(playingCardsMatchList[1]);
 	}
 
-	dobjFor(Examine) {
-		verify() {}
-		check() {
-			local c, m;
+	playingCardsTypeCheck(id) {
+			local c, h;
 
-			if((m = getFirstPlayingCard()) == nil)
-				return;
-
-			if((c = getCard(m)) == nil) {
-				reportFailure(&invalidCardName, m);
+			// See if the match actually corresponds to a
+			// card name.
+			if((c = getCard(id)) == nil) {
+				reportFailure(&invalidCardName, id);
 				exit;
 			}
-			if(!gActor.hasPlayingCard(c)) {
-				reportFailure(&cantExamineNoCard,
+
+			h = gActor.getPlayingCardsHand();
+
+			// Make sure the actor can see their cards.
+			if(!gActor.canSee(h)) {
+				reportFailure(&cantNoCard,
 					c.getLongName());
 				exit;
 			}
+
+			// Make sure the actor is holding their cards.
+			if(h.getCarryingActor() != gActor) {
+				reportFailure(&cantNoCard,
+					c.getLongName());
+				exit;
+			}
+
+			// Make sure the player has the named card in
+			// their hand.
+			if(!gActor.hasPlayingCard(c)) {
+				reportFailure(&cantNoCard,
+					c.getLongName());
+				exit;
+			}
+	}
+
+	dobjFor(Examine) {
+		verify() { dangerous; }
+		check() {
+			local m;
+
+			// Make sure we matched a card name this action.
+			if((m = getFirstPlayingCard()) == nil)
+				return;
+
+			playingCardsTypeCheck(m);
 		}
 		action() {
 			"There\'s nothing special about the
@@ -372,4 +396,18 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 			playingCardsMatchList.splice(1, 1);
 		}
 	}
+
+	dobjFor(Discard) {
+		verify() { dangerous; }
+		check() {
+			local m;
+
+			// Make sure we matched a card name this action.
+			if((m = getFirstPlayingCard()) == nil)
+				return;
+
+			playingCardsTypeCheck(m);
+		}
+	}
+
 ;

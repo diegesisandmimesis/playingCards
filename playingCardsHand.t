@@ -34,8 +34,12 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	playingCardCheck() { return(owner == gActor); }
 
 	dobjFor(Examine) {
+		verify() {}
 		action() {
-			_describeHand();
+			if(getCarryingActor() != gActor)
+				describeBacks();
+			else
+				describeHand();
 		}
 	}
 
@@ -49,7 +53,12 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 		verify() { inaccessible(&cantDealNotDeck); }
 	}
 
-	_describeHand() {
+	describeBacks() {
+		defaultReport('{You/he} {does}n\'t learn anything from
+			looking at the backs of {your/his} cards. ');
+	}
+
+	describeHand() {
 		if(_cards == nil) {
 			"No cards. ";
 			return;
