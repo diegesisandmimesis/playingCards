@@ -73,13 +73,18 @@ modify playerActionMessages
 			there are only <<spellInt(m)>> total cards in the
 			deck. ');
 	}
+	cantDealNoCardsLeft = '{You/He} can\'t deal any cards because there
+		aren\'t any left in the deck. '
 	cantDealNotEnoughCards(n) {
+		if(n == 1)
+			return(cantDealNoCardsLeft);
 		return('{You/He} can\'t deal <<spellInt(n)>> cards because
 			there aren\'t that many left in the deck.  The deck
 			will have to be shuffled first. ');
 	}
 	okayDeal(n) {
-		return('{You/He} deal{s} <<spellInt(n)>> cards. ');
+		return('{You/He} deal{s} <<spellInt(n)>>
+			card<<((n > 1) ? 's' : '')>>. ');
 	}
 
 	okayDiscard(id) {

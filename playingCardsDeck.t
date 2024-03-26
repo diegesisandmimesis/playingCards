@@ -13,6 +13,21 @@
 class PlayingCardUnthing: Unthing '(single) (individual) card' 'card'
 	notHereMsg = playerActionMessages.cantUseSingleCard
 	dobjFor(Take) { verify() { illogical(&cantTakeSingleCard); } }
+	dobjFor(Deal) {
+		verify() {
+			dangerous;
+			if((location != nil) && location.ofKind(Deck)) {
+				if(location.cardsLeft() < 1) {
+					illogicalNow(&cantDealNoCardsLeft);
+				}
+			}
+		}
+		action() {
+			if((location == nil) || !location.ofKind(Deck))
+				return;
+			location._deal(1);
+		}
+	}
 ;
 
 class PlayingCardsHandUnthing: Unthing '(playing) (card) hand/cards' 'cards'
