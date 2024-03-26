@@ -9,6 +9,8 @@
 #include "playingCards.h"
 
 modify playerActionMessages
+	// Utility methods to format strings as command lines.  Used
+	// when suggesting alternative commands in failure messages.
 	formatInlineCommand(txt) {
 		return('<b>&gt;<<toString(txt).toUpper()>></b>');
 	}
@@ -16,13 +18,23 @@ modify playerActionMessages
 		return('<.p>\n\t<<formatInlineCommand(txt)>><.p> ');
 	}
 
+	// Generic failure message.  Used when the PlayingCardType's vocabulary
+	// was matched, but the matching noun phrase doesn't correspond to
+	// a card name.  For example >EXAMINE SPADES will end up here, because
+	// "spades" is part of the vocabulary, but it doesn't describe a
+	// specific card.
 	invalidCardName(n) {
 		return('The story tried to interpret <q><<toString(n)>></q> as
 			the name of a card but failed. ');
 	}
 
+	// Generic failure message
 	cantDoThatDefault(id) {
 		return('{You/He} can\'t do that with the <<id>>. ');
+	}
+	cantDoThatDefaultList(lst) {
+		return('{You/He} can\'t do that with the
+			<<stringLister.makeSimpleList(lst)>>. ');
 	}
 
 	cantDiscardThat = '{You/He} can\'t discard that. '
@@ -75,8 +87,13 @@ modify playerActionMessages
 	}
 
 	okayDiscardList(lst) {
-		return('{You/He} discard{s} <<spellInt(lst.length)>> cards:
-			<<stringLister.makeSimpleList(lst)>>. ');
+		if(lst.length > 1) {
+			return('{You/He} discard{s} <<spellInt(lst.length)>>
+				cards: <<stringLister.makeSimpleList(lst)>>. ');
+		} else {
+			return('{You/He} discard{s} one card:
+				<<stringLister.makeSimpleList(lst)>>. ');
+		}
 	}
 	failedDiscardList(lst) {
 		return('{You/He} can\'t discard

@@ -30,8 +30,9 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 	_failedNames = perInstance(new Vector())
 	_failedCards = perInstance(new Vector())
 	_examines = perInstance(new Vector())
+	_failedGeneric = perInstance(new Vector())
 
-	minSummaryLength = 2
+	minSummaryLength = 1
 
 	hideFromAll(action) { return(true); }
 	//notWithIntangibleMsg = '{You/He} can\'t do that. '
@@ -406,9 +407,19 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		}
 	}
 
+	playingCardHandCheck(c) {
+		if(!gActor.hasPlayingCard(c)) {
+			reportFailure(&cantNoCard, c.getLongName());
+			rememberBadCard(c);
+			clearMatchedCard();
+			exit;
+		}
+	}
+
 	dobjFor(Default) {
+		verify() { dangerous; }
 		check() {
-			local m;
+			local c, m;
 
 			if((m = getFirstPlayingCardMatch()) == nil) {
 				return;
@@ -416,7 +427,25 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 
 			playingCardsTypeCheck(m);
 
-			reportFailure(&cantDoThatDefault, getMatchedCard());
+			c = getMatchedCard();
+
+			playingCardHandCheck(c);
+/*
+			// Make sure the player has the named card in
+			// their hand.
+			if(!gActor.hasPlayingCard(c)) {
+				reportFailure(&cantNoCard,
+					c.getLongName());
+				rememberBadCard(c);
+				clearMatchedCard();
+				exit;
+			}
+*/
+
+			reportFailure(&cantDoThatDefault, c);
+			rememberGenericFailure(c);
+			clearMatchedCard();
+
 			exit;
 		}
 	}
@@ -434,14 +463,18 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 
 			c = getMatchedCard();
 
+			playingCardHandCheck(c);
+/*
 			// Make sure the player has the named card in
 			// their hand.
 			if(!gActor.hasPlayingCard(c)) {
 				reportFailure(&cantNoCard,
 					c.getLongName());
+				rememberBadCard(c);
 				clearMatchedCard();
 				exit;
 			}
+*/
 		}
 		action() {
 			local c;
@@ -509,6 +542,10 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		_examines.append(id);
 		gAction.callAfterActionMain(self);
 	}
+	rememberGenericFailure(card) {
+		_failedGeneric.append(card);
+		gAction.callAfterActionMain(self);
+	}
 	rememberBadName(id) {
 		_failedNames.append(id);
 		gAction.callAfterActionMain(self);
@@ -524,6 +561,7 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		_failedCards.setLength(0);
 		_failedNames.setLength(0);
 		_examines.setLength(0);
+		_failedGeneric.setLength(0);
 	}
 
 	afterActionMain() {
@@ -552,15 +590,17 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 					txt.append(summarizeCards(
 						_examines));
 
-				if(_failedCards.length > 0) {
+				if(_failedCards.length > 0)
 					txt.append(summarizeCards(
 						_failedCards, true));
-				}
 
-				if(_failedNames.length > 0) {
+				if(_failedNames.length > 0)
 					txt.append(summarizeNames(
 						_failedNames));
-				}
+
+				if(_failedGeneric.length > 0)
+					txt.append(summarizeGenericFailure(
+						_failedGeneric));
 
 				return(toString(txt));
 			}
@@ -596,6 +636,15 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		else
 			return(playerActionMessages.okayExamineCardList(
 				v.toList()));
+	}
+	summarizeGenericFailure(lst) {
+		local v;
+
+		v = new Vector(lst.length);
+		lst.forEach(function(o) {
+			v.append(o.getLongName());
+		});
+		return(playerActionMessages.cantDoThatDefaultList(v.toList()));
 	}
 	summarizeNames(lst) {
 		local v;
