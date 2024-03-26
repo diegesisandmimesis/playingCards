@@ -10,5 +10,6 @@ source: playingCardsSpanish.t
 source: playingCardsActions.t
 source: playingCardsActor.t
 source: playingCardsHand.t
+source: playingCardsDiscardPile.t
 source: playingCardsMsg.t
 source: playingCardsPreCondition.t

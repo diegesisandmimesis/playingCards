@@ -25,6 +25,11 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 	rankAndSuitRegex = nil		// compiled regex for rank and suit
 	otherRegex = nil		// compiled regex for "other" cards
 
+	_discards = perInstance(new Vector())
+	_failedDiscards = perInstance(new Vector())
+
+	minSummaryLength = 2
+
 	// Set up our vocabulary to catch all plausible card descriptions
 	// (for cards of our card class).
 	initializeVocab() {
@@ -338,76 +343,175 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		return(inherited(origTokens, adjustedTokens));
 	}
 
-	getFirstPlayingCard() {
+	// Returns the first card name mentioned in the current action's
+	// tokens.
+	// The list is populated for each action by matchNameCommon().
+	getFirstPlayingCardMatch() {
 		if(playingCardsMatchList.length < 1)
 			return(nil);
 		return(playingCardsMatchList[1]);
 	}
 
+	// Returns a PlayingCard instance for the first matched card name
+	// in the current action (if any).
+	getMatchedCard() {
+		return(getCard(getFirstPlayingCardMatch()));
+	}
+
+	// Clears the first entry in the match list for this action.
+	clearMatchedCard() { playingCardsMatchList.splice(1, 1); }
+
 	playingCardsTypeCheck(id) {
-			local c, h;
+		local c, h;
 
-			// See if the match actually corresponds to a
-			// card name.
-			if((c = getCard(id)) == nil) {
-				reportFailure(&invalidCardName, id);
-				exit;
-			}
+		// See if the match actually corresponds to a
+		// card name.
+		if((c = getCard(id)) == nil) {
+			reportFailure(&invalidCardName, id);
+			clearMatchedCard();
+			exit;
+		}
 
-			h = gActor.getPlayingCardsHand();
+		h = gActor.getPlayingCardsHand();
 
-			// Make sure the actor can see their cards.
-			if(!gActor.canSee(h)) {
-				reportFailure(&cantNoCard,
-					c.getLongName());
-				exit;
-			}
+		// Make sure the actor can see their cards.
+		if(!gActor.canSee(h)) {
+			reportFailure(&cantNoCard,
+				c.getLongName());
+			clearMatchedCard();
+			exit;
+		}
 
-			// Make sure the actor is holding their cards.
-			if(h.getCarryingActor() != gActor) {
-				reportFailure(&cantNoCard,
-					c.getLongName());
-				exit;
-			}
+		// Make sure the actor is holding their cards.
+		if(h.getCarryingActor() != gActor) {
+			reportFailure(&cantNoCard,
+				c.getLongName());
+			clearMatchedCard();
+			exit;
+		}
+	}
+
+	dobjFor(Examine) {
+		verify() { dangerous; }
+		check() {
+			local c, m;
+
+			// Make sure we matched a card name this action.
+			if((m = getFirstPlayingCardMatch()) == nil)
+				return;
+
+			playingCardsTypeCheck(m);
+
+			c = getMatchedCard();
 
 			// Make sure the player has the named card in
 			// their hand.
 			if(!gActor.hasPlayingCard(c)) {
 				reportFailure(&cantNoCard,
 					c.getLongName());
+				clearMatchedCard();
 				exit;
 			}
-	}
-
-	dobjFor(Examine) {
-		verify() { dangerous; }
-		check() {
-			local m;
-
-			// Make sure we matched a card name this action.
-			if((m = getFirstPlayingCard()) == nil)
-				return;
-
-			playingCardsTypeCheck(m);
 		}
 		action() {
 			"There\'s nothing special about the
-				<<getLongName(getFirstPlayingCard())>>. ";
-			playingCardsMatchList.splice(1, 1);
+				<<getLongName(getFirstPlayingCardMatch())>>. ";
+			clearMatchedCard();
 		}
 	}
 
 	dobjFor(Discard) {
 		verify() { dangerous; }
 		check() {
-			local m;
+			local c, m;
 
 			// Make sure we matched a card name this action.
-			if((m = getFirstPlayingCard()) == nil)
+			if((m = getFirstPlayingCardMatch()) == nil)
 				return;
 
 			playingCardsTypeCheck(m);
+
+			c = getMatchedCard();
+
+			// Make sure the player has the named card in
+			// their hand.
+			if(!gActor.hasPlayingCard(c)) {
+				// Remember that we tried to discard a
+				// card we didn't have.
+				rememberFailedDiscard(c);
+
+				// Clear the card from the match list.
+				clearMatchedCard();
+
+				// Complain.
+				reportFailure(&cantNoCard,
+					c.getLongName());
+				exit;
+			}
+		}
+		action() {
+			local c;
+
+			c = getMatchedCard();
+
+			rememberDiscard(c);
+			gActor.getPlayingCardsHand().discard(c);
+			clearMatchedCard();
+
+			defaultReport(&okayDiscard, c.getLongName());
 		}
 	}
 
+	rememberFailedDiscard(card) {
+		_failedDiscards.append(card);
+		gAction.callAfterActionMain(self);
+	}
+	rememberDiscard(card) {
+		_discards.append(card);
+		gAction.callAfterActionMain(self);
+	}
+
+	afterActionMain() {
+		if(gAction.dobjList_.length < minSummaryLength) {
+			_discards.setLength(0);
+			_failedDiscards.setLength(0);
+			return;
+		}
+		gTranscript.summarizeAction(
+			function(x) {
+				return(x.action_ == gAction);
+			},
+			function(vec) {
+				local discs, fails;
+
+				if(_discards.length > 0)
+					discs = summarizeDiscards(_discards);
+				else
+					discs = '';
+				if(_failedDiscards.length > 0)
+					fails = summarizeDiscards(
+						_failedDiscards, true);
+				else
+					fails = '';
+
+				return('<<discs>><<fails>>');
+			}
+		);
+		_discards.setLength(0);
+	}
+	summarizeDiscards(lst, failed?) {
+		local v;
+
+		v = new Vector(lst.length);
+		lst.forEach(function(o) {
+			v.append('the '  + o.getLongName());
+		});
+
+		if(failed == true)
+			return(playerActionMessages.failedDiscardList(
+				v.toList()));
+		else
+			return(playerActionMessages.okayDiscardList(
+				v.toList()));
+	}
 ;

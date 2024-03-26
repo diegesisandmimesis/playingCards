@@ -33,6 +33,7 @@ class Deck: PlayingCardsObject, Thing
 	index = 0			// current card in the deck
 
 	_hands = perInstance(new Vector())
+	_discardPile = nil
 
 	playingCardUnthingClass = PlayingCardUnthing
 	playingCardsHandUnthingClass = PlayingCardsHandUnthing
@@ -105,6 +106,9 @@ class Deck: PlayingCardsObject, Thing
 		}
 
 		index = 0;
+
+		clearHands();
+		clearDiscards();
 	}
 
 	initializeThing() {
@@ -182,7 +186,6 @@ class Deck: PlayingCardsObject, Thing
 
 	addHand(v) { _hands.appendUnique(v); v.setDeck(self); }
 	removeHand(v) { _hands.removeElement(v); }
-	clearHands() { _hands.setLength(0); }
 
 	_deal(n) { dealHandFor(n, gActor); }
 
@@ -203,7 +206,7 @@ class Deck: PlayingCardsObject, Thing
 			return;
 		}
 		hand.addCards(l[1]);
-		hand.setDeck(self);
+		addHand(hand);
 
 		defaultReport(&okayDeal, n);
 	}
@@ -214,5 +217,29 @@ class Deck: PlayingCardsObject, Thing
 		}
 
 		return(_cardTypeInstance.getCard(id));
+	}
+
+	initDiscardPile() {
+		_discardPile = new DiscardPile();
+		_discardPile.moveInto(self.getOutermostRoom());
+	}
+
+	getDiscardPile() {
+		if(_discardPile == nil)
+			initDiscardPile();
+
+		return(_discardPile);
+	}
+
+	clearDiscards() {
+		getDiscardPile().clear();
+	}
+
+	clearHands() {
+		_hands.forEach(function(o) {
+aioSay('clearing hand\n ');
+			o.clear();
+		});
+		_hands.setLength(0);
 	}
 ;

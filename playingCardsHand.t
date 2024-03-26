@@ -31,6 +31,11 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	addCards(ar) { _cards += ar; }
 	clearCards() { _cards.setLength(0); }
 
+	clear() {
+		clearCards();
+		moveInto(nil);
+	}
+
 	playingCardCheck() { return(owner == gActor); }
 
 	dobjFor(Examine) {
@@ -40,6 +45,12 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 				describeBacks();
 			else
 				describeHand();
+		}
+	}
+
+	dobjFor(Discard) {
+		verify() {
+			illogical(&cantDiscardMustSpecify);
 		}
 	}
 
@@ -111,4 +122,26 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	}
 
 	hasCard(id) { return(getCardIndex(id) != nil); }
+
+	getDiscardPile() {
+		if(_deck == nil)
+			return(nil);
+		return(_deck.getDiscardPile());
+	}
+
+	discard(card) {
+		local d, idx;
+
+		if((idx = getCardIndex(card)) == nil)
+			return(nil);
+
+		_cards.removeElementAt(idx);
+
+		if((d = getDiscardPile()) != nil) {
+			d.setup(_deck);
+			d.addCard();
+		}
+
+		return(true);
+	}
 ;
