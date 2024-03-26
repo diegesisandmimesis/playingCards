@@ -21,6 +21,10 @@ modify playerActionMessages
 			the name of a card but failed. ');
 	}
 
+	cantDoThatDefault(id) {
+		return('{You/He} can\'t do that with the <<id>>. ');
+	}
+
 	cantDiscardThat = '{You/He} can\'t discard that. '
 	cantDiscardMustSpecify = '{You/He} must specify which card(s)
 		{you/he} want{s} to discard.
@@ -79,5 +83,25 @@ modify playerActionMessages
 			<<stringLister.makeSimpleList(lst)>> because
 			{you/he} {is}n\'t holding <<if(lst.length > 1)>>
 			them<<else>>it<<end>>. ');
+	}
+
+	okayExamineCard(card) {
+		return('There\'s nothing special about the
+			<<card.getLongName()>>. ');
+	}
+	okayExamineCardList(lst) {
+		return('There\'s nothing special about
+			the <<stringLister.makeSimpleList(lst)>>. ');
+	}
+	cantExamineCardList(lst) {
+		return('{You/He} see{s} no
+			<<stringLister.makeSimpleList(lst)>> here. ');
+	}
+	cantParseNames(lst) {
+		return('The story tried to interpret
+			<<stringLister.makeSimpleList(lst)>> as	the
+			<<if(lst.length > 1)>>names of cards<<else>>
+			name of a card<<end>>
+			but failed. ');
 	}
 ;

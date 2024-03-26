@@ -8,7 +8,7 @@
 
 #include "playingCards.h"
 
-class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
+class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 	initialLocationClass = Room
 
 	cardClass = PlayingCard		// PlayingCard class our cards use
@@ -27,8 +27,14 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 
 	_discards = perInstance(new Vector())
 	_failedDiscards = perInstance(new Vector())
+	_failedNames = perInstance(new Vector())
+	_failedCards = perInstance(new Vector())
+	_examines = perInstance(new Vector())
 
 	minSummaryLength = 2
+
+	hideFromAll(action) { return(true); }
+	//notWithIntangibleMsg = '{You/He} can\'t do that. '
 
 	// Set up our vocabulary to catch all plausible card descriptions
 	// (for cards of our card class).
@@ -88,7 +94,7 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		local txt;
 
 		txt = new StringBuffer();
-		txt.append('(THE[ ]+){0,1}(');
+		//txt.append('(THE[ ]+){0,1}(');
 		txt.append(rankShort.join('|'));
 		txt.append('|');
 		txt.append(rankLong.join('|'));
@@ -96,10 +102,15 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		txt.append(suitShort.join('|'));
 		txt.append('|');
 		txt.append(suitLong.join('|'));
-		txt.append('){1}');
+		//txt.append('){1}');
 		txt = toString(txt).toUpper();
+		//txt = toString(txt).toUpper();
 
-		rankAndSuitRegex = new RexPattern(txt);
+		//rankAndSuitRegex = new RexPattern(txt);
+		rankAndSuitRegex = new RexPattern(
+			'(THE[ ]+){0,1}%<('
+			+ txt
+			+ '){1}%>');
 	}
 
 	initOtherRegex() {
@@ -347,7 +358,8 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 	// tokens.
 	// The list is populated for each action by matchNameCommon().
 	getFirstPlayingCardMatch() {
-		if(playingCardsMatchList.length < 1)
+		if((playingCardsMatchList.length < 1)
+			|| (playingCardsMatchTurn != libGlobal.totalTurns))
 			return(nil);
 		return(playingCardsMatchList[1]);
 	}
@@ -368,6 +380,7 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		// card name.
 		if((c = getCard(id)) == nil) {
 			reportFailure(&invalidCardName, id);
+			rememberBadName(id);
 			clearMatchedCard();
 			exit;
 		}
@@ -378,6 +391,7 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		if(!gActor.canSee(h)) {
 			reportFailure(&cantNoCard,
 				c.getLongName());
+			rememberBadCard(c);
 			clearMatchedCard();
 			exit;
 		}
@@ -386,7 +400,23 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		if(h.getCarryingActor() != gActor) {
 			reportFailure(&cantNoCard,
 				c.getLongName());
+			rememberBadCard(c);
 			clearMatchedCard();
+			exit;
+		}
+	}
+
+	dobjFor(Default) {
+		check() {
+			local m;
+
+			if((m = getFirstPlayingCardMatch()) == nil) {
+				return;
+			}
+
+			playingCardsTypeCheck(m);
+
+			reportFailure(&cantDoThatDefault, getMatchedCard());
 			exit;
 		}
 	}
@@ -414,8 +444,12 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 			}
 		}
 		action() {
-			"There\'s nothing special about the
-				<<getLongName(getFirstPlayingCardMatch())>>. ";
+			local c;
+
+			c = getMatchedCard();
+
+			defaultReport(&okayExamineCard, c);
+			rememberCard(c);
 			clearMatchedCard();
 		}
 	}
@@ -471,10 +505,30 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		gAction.callAfterActionMain(self);
 	}
 
+	rememberCard(id) {
+		_examines.append(id);
+		gAction.callAfterActionMain(self);
+	}
+	rememberBadName(id) {
+		_failedNames.append(id);
+		gAction.callAfterActionMain(self);
+	}
+	rememberBadCard(card) {
+		_failedCards.append(card);
+		gAction.callAfterActionMain(self);
+	}
+
+	clearCardReportLists() {
+		_discards.setLength(0);
+		_failedDiscards.setLength(0);
+		_failedCards.setLength(0);
+		_failedNames.setLength(0);
+		_examines.setLength(0);
+	}
+
 	afterActionMain() {
 		if(gAction.dobjList_.length < minSummaryLength) {
-			_discards.setLength(0);
-			_failedDiscards.setLength(0);
+			clearCardReportLists();
 			return;
 		}
 		gTranscript.summarizeAction(
@@ -482,22 +536,36 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 				return(x.action_ == gAction);
 			},
 			function(vec) {
-				local discs, fails;
+				local txt;
+
+				txt = new StringBuffer();
 
 				if(_discards.length > 0)
-					discs = summarizeDiscards(_discards);
-				else
-					discs = '';
-				if(_failedDiscards.length > 0)
-					fails = summarizeDiscards(
-						_failedDiscards, true);
-				else
-					fails = '';
+					txt.append(summarizeDiscards(
+						_discards));
 
-				return('<<discs>><<fails>>');
+				if(_failedDiscards.length > 0)
+					txt.append(summarizeDiscards(
+						_failedDiscards, true));
+
+				if(_examines.length > 0)
+					txt.append(summarizeCards(
+						_examines));
+
+				if(_failedCards.length > 0) {
+					txt.append(summarizeCards(
+						_failedCards, true));
+				}
+
+				if(_failedNames.length > 0) {
+					txt.append(summarizeNames(
+						_failedNames));
+				}
+
+				return(toString(txt));
 			}
 		);
-		_discards.setLength(0);
+		clearCardReportLists();
 	}
 	summarizeDiscards(lst, failed?) {
 		local v;
@@ -513,5 +581,30 @@ class PlayingCardType: MultiLoc, Vaporous, PlayingCardsObject
 		else
 			return(playerActionMessages.okayDiscardList(
 				v.toList()));
+	}
+	summarizeCards(lst, failed?) {
+		local v;
+
+		v = new Vector(lst.length);
+		lst.forEach(function(o) {
+			v.append(o.getLongName());
+		});
+
+		if(failed == true)
+			return(playerActionMessages.cantExamineCardList(
+				v.toList()));
+		else
+			return(playerActionMessages.okayExamineCardList(
+				v.toList()));
+	}
+	summarizeNames(lst) {
+		local v;
+
+		v = new Vector(lst.length);
+		lst.forEach(function(o) {
+			v.append('<q>' + o.getLongName() + '</q>');
+		});
+
+		return(playerActionMessages.cantParseNames(v.toList()));
 	}
 ;
