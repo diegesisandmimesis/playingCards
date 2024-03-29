@@ -15,6 +15,7 @@ class TarotCard: PlayingCard
 
 class TarotCardType: PlayingCardType
 	cardClass = TarotCard
+	deckClass = TarotDeck
 
 	suitShort = static [ 'S', 'C', 'P', 'W' ]
 	suitLong = static [ 'swords', 'cups', 'pentacles', 'wands' ]
@@ -59,7 +60,7 @@ class TarotCardType: PlayingCardType
 	}
 ;
 
-class TarotDeck: Deck
+class TarotDeck: CardDeck
 	cardCount = 78
 	suits = 4
 	ranks = 14

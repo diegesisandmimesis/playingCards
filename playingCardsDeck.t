@@ -16,14 +16,14 @@ class PlayingCardUnthing: Unthing '(single) (individual) card' 'card'
 	dobjFor(Deal) {
 		verify() {
 			dangerous;
-			if((location != nil) && location.ofKind(Deck)) {
+			if((location != nil) && location.ofKind(CardDeck)) {
 				if(location.cardsLeft() < 1) {
 					illogicalNow(&cantDealNoCardsLeft);
 				}
 			}
 		}
 		action() {
-			if((location == nil) || !location.ofKind(Deck))
+			if((location == nil) || !location.ofKind(CardDeck))
 				return;
 			location._deal(1);
 		}
@@ -34,7 +34,7 @@ class PlayingCardsHandUnthing: Unthing '(playing) (card) hand/cards' 'cards'
 	notHereMsg = playerActionMessages.cantUseNoHand
 ;
 
-class Deck: PlayingCardsObject, Thing
+class CardDeck: PlayingCardsObject, Thing
 	'deck (of) (card)/cards' 'deck of cards'
 	"It's a deck of playing cards. "
 	cardCount = 0			// number of cards in the deck

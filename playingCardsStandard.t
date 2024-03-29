@@ -28,7 +28,7 @@ class StandardCardType: PlayingCardType
 		'eight', 'nine', 'ten', 'jack', 'queen', 'king', 'ace' ]
 ;
 
-class StandardDeck: Deck
+class StandardDeck: CardDeck
 	cardCount = 52
 	suits = 4
 	ranks = 13

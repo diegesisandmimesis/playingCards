@@ -26,7 +26,7 @@ class SpanishCardType: PlayingCardType
 		'seven', 'sota', 'caballo', 'rey' ]
 ;
 
-class SpanishDeck: Deck
+class SpanishDeck: CardDeck
 	cardCount = 40
 	suits = 4
 	ranks = 10

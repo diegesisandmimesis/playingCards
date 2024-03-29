@@ -115,7 +115,7 @@ class HanafudaCardType: PlayingCardType
 	}
 ;
 
-class HanafudaDeck: Deck
+class HanafudaDeck: CardDeck
 	cardCount = 48
 	suits = 12
 	ranks = 4

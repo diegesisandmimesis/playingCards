@@ -12,7 +12,7 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 	initialLocationClass = Room
 
 	cardClass = PlayingCard		// PlayingCard class our cards use
-	deckClass = Deck
+	deckClass = CardDeck
 
 	suitShort = perInstance([])	// single letter suit names
 	suitLong = perInstance([])	// single word suit names
