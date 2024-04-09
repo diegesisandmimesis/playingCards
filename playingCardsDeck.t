@@ -135,6 +135,9 @@ class CardDeck: PlayingCardsObject, Thing
 		playingCardsHandUnthingClass.createInstance().moveInto(self);
 
 		obj = cardType.createInstance();
+		ranks = obj.rankShort.length();
+		suits = obj.suitShort.length();
+		cardCount = (ranks * suits) + obj.otherShort.length();
 		_cardTypeInstance = obj;
 	}
 
@@ -252,7 +255,6 @@ class CardDeck: PlayingCardsObject, Thing
 
 	clearHands() {
 		_hands.forEach(function(o) {
-aioSay('clearing hand\n ');
 			o.clear();
 		});
 		_hands.setLength(0);

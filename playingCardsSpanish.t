@@ -29,9 +29,6 @@ class SpanishCardType: PlayingCardType
 ;
 
 class SpanishDeck: CardDeck
-	cardCount = 40
-	suits = 4
-	ranks = 10
 	cardType = SpanishCardType
 ;
 

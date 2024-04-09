@@ -29,8 +29,5 @@ class StandardCardType: PlayingCardType
 ;
 
 class StandardDeck: CardDeck
-	cardCount = 52
-	suits = 4
-	ranks = 13
 	cardType = StandardCardType
 ;

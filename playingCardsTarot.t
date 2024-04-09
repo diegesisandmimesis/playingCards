@@ -63,10 +63,6 @@ class TarotCardType: PlayingCardType
 ;
 
 class TarotDeck: CardDeck
-	cardCount = 78
-	suits = 4
-	ranks = 14
-	others = 22
 	cardType = TarotCardType
 
 	shuffle() {
