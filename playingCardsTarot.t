@@ -8,6 +8,8 @@
 
 #include "playingCards.h"
 
+#ifdef PLAYING_CARDS_TAROT
+
 class TarotCard: PlayingCard
 	cardType = TarotCardType
 	reversed = nil
@@ -75,3 +77,5 @@ class TarotDeck: CardDeck
 		});
 	}
 ;
+
+#endif // PLAYING_CARDS_TAROT

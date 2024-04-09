@@ -651,7 +651,7 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 
 		v = new Vector(lst.length);
 		lst.forEach(function(o) {
-			v.append('<q>' + o.getLongName() + '</q>');
+			v.append('<q><<o>></q>');
 		});
 
 		return(playerActionMessages.cantParseNames(v.toList()));

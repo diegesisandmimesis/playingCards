@@ -1,5 +1,6 @@
 -D LANGUAGE=en_us
 -D MESSAGESTYLE=neu
+-D PLAYING_CARDS_TAROT
 -Fy obj -Fo obj
 -Fs ../..
 -o games/tarotTest.t3

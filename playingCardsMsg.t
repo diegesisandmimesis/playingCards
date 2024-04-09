@@ -24,8 +24,7 @@ modify playerActionMessages
 	// "spades" is part of the vocabulary, but it doesn't describe a
 	// specific card.
 	invalidCardName(n) {
-		return('The story tried to interpret <q><<toString(n)>></q> as
-			the name of a card but failed. ');
+		return('The story tried to interpret <q><<toString(n)>></q> as the name of a card but failed. ');
 	}
 
 	// Generic failure message
@@ -47,8 +46,7 @@ modify playerActionMessages
 			\n\t<<formatInlineCommand('discard 2s, 3h')>>
 			<.p> '
 
-	cantUseHandNotHolding = '{You/He} can\'t do anything with {your/his}
-		cards because {you/he} {are}n\'t holding them. '
+	cantUseHandNotHolding = '{You/He} can\'t do anything with {your/his} cards because {you/he} {are}n\'t holding them. '
 
 	cantNoCard(txt) {
 		return('{You/He} see{s} no <<txt>> here. ');
@@ -69,22 +67,17 @@ modify playerActionMessages
 		{you/he} don\'t have the full deck. '
 	cantDealNoCount = 'How many cards do{es} {you/he} want to deal?'
 	cantDealNotThatManyCards(n, m) {
-		return('{You/He} can\'t deal <<spellInt(n)>> cards because
-			there are only <<spellInt(m)>> total cards in the
-			deck. ');
+		return('{You/He} can\'t deal <<spellInt(n)>> cards because there are only <<spellInt(m)>> total cards in the deck. ');
 	}
 	cantDealNoCardsLeft = '{You/He} can\'t deal any cards because there
 		aren\'t any left in the deck. '
 	cantDealNotEnoughCards(n) {
 		if(n == 1)
 			return(cantDealNoCardsLeft);
-		return('{You/He} can\'t deal <<spellInt(n)>> cards because
-			there aren\'t that many left in the deck.  The deck
-			will have to be shuffled first. ');
+		return('{You/He} can\'t deal <<spellInt(n)>> cards because there aren\'t that many left in the deck.  The deck will have to be shuffled first. ');
 	}
 	okayDeal(n) {
-		return('{You/He} deal{s} <<spellInt(n)>>
-			card<<((n > 1) ? 's' : '')>>. ');
+		return('{You/He} deal{s} <<spellInt(n)>> card<<((n > 1) ? 's' : '')>>. ');
 	}
 
 	okayDiscard(id) {
@@ -93,18 +86,13 @@ modify playerActionMessages
 
 	okayDiscardList(lst) {
 		if(lst.length > 1) {
-			return('{You/He} discard{s} <<spellInt(lst.length)>>
-				cards: <<stringLister.makeSimpleList(lst)>>. ');
+			return('{You/He} discard{s} <<spellInt(lst.length)>> cards: <<stringLister.makeSimpleList(lst)>>. ');
 		} else {
-			return('{You/He} discard{s} one card:
-				<<stringLister.makeSimpleList(lst)>>. ');
+			return('{You/He} discard{s} one card: <<stringLister.makeSimpleList(lst)>>. ');
 		}
 	}
 	failedDiscardList(lst) {
-		return('{You/He} can\'t discard
-			<<stringLister.makeSimpleList(lst)>> because
-			{you/he} {is}n\'t holding <<if(lst.length > 1)>>
-			them<<else>>it<<end>>. ');
+		return('{You/He} can\'t discard <<stringLister.makeSimpleList(lst)>> because {you/he} {is}n\'t holding <<if(lst.length > 1)>> them<<else>>it<<end>>. ');
 	}
 
 	okayExamineCard(card) {
@@ -120,10 +108,6 @@ modify playerActionMessages
 			<<stringLister.makeSimpleList(lst)>> here. ');
 	}
 	cantParseNames(lst) {
-		return('The story tried to interpret
-			<<stringLister.makeSimpleList(lst)>> as	the
-			<<if(lst.length > 1)>>names of cards<<else>>
-			name of a card<<end>>
-			but failed. ');
+		return('The story tried to interpret <<stringLister.makeSimpleList(lst)>> as the <<if(lst.length > 1)>>names of cards<<else>> name of a card<<end>> but failed. ');
 	}
 ;

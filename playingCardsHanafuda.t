@@ -2,11 +2,17 @@
 //
 // playingCardsHanafuda.t
 //
+//	Incomplete hanafuda implementation.
+//
+//	Basic functionality works, but card naming is a little kludgy and
+//	disambiguation between equivalent cards isn't handled.
 //
 #include <adv3.h>
 #include <en_us.h>
 
 #include "playingCards.h"
+
+#ifdef PLAYING_CARDS_HANAFUDA
 
 class HanafudaCard: PlayingCard
 	cardType = HanafudaCardType
@@ -121,3 +127,5 @@ class HanafudaDeck: CardDeck
 	ranks = 4
 	cardType = HanafudaCardType
 ;
+
+#endif // PLAYING_CARDS_HANAFUDA

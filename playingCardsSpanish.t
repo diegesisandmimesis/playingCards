@@ -9,6 +9,8 @@
 
 #include "playingCards.h"
 
+#ifdef PLAYING_CARDS_SPANISH
+
 class SpanishCard: PlayingCard
 	cardType = SpanishCardType
 ;
@@ -32,3 +34,5 @@ class SpanishDeck: CardDeck
 	ranks = 10
 	cardType = SpanishCardType
 ;
+
+#endif // PLAYING_CARDS_SPANISH
