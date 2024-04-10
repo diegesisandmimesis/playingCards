@@ -142,6 +142,9 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 			d.addCard();
 		}
 
+		if(_cards.length == 0)
+			self.moveInto(nil);
+
 		return(true);
 	}
 ;
