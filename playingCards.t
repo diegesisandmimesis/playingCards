@@ -13,7 +13,7 @@
 //
 //	Basic usage is to just declare an in-game object that's an
 //	instance of one of the module-provided card deck classes.  The
-//	base Deck class is an abstract class, and shouldn't be
+//	base CardDeck class is an abstract class, and shouldn't be
 //	instanced directly.
 //
 //	For most games what you probably want is the StandardDeck class,
@@ -32,7 +32,7 @@
 //
 //		SHUFFLE [object]
 //			Shuffles the object.  By default Thing treats
-//			SHUFFLE as illogical, and Deck handles it by
+//			SHUFFLE as illogical, and CardDeck handles it by
 //			shuffling the deck.
 //
 //		DEAL [count [object]]

@@ -10,15 +10,19 @@
 
 modify Actor
 	playingCardsHand = nil
+	playingCardsHandClass = PlayingCardsHand
 
 	getPlayingCardsHand() {
 		if(playingCardsHand == nil) {
-			playingCardsHand = new PlayingCardsHand();
+			playingCardsHand = getPlayingCardsHandClass()
+				.createInstance();
 			playingCardsHand.owner = self;
 		}
 
 		return(playingCardsHand);
 	}
+
+	getPlayingCardsHandClass() { return(playingCardsHandClass); }
 
 	hasPlayingCard(id) { return(getPlayingCardsHand().hasCard(id)); }
 ;

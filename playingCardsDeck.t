@@ -207,26 +207,35 @@ class CardDeck: PlayingCardsObject, Thing
 
 	_deal(n) { dealHandFor(n, gActor); }
 
-	dealHandFor(n, actor) {
-		local hand, l;
+	dealHandFor(n, players) {
+		local hand, i, l;
 
 		if(n == nil) {
 			reportFailure(&cantDealNoCount);
 			return;
 		}
-		hand = actor.getPlayingCardsHand();
-		if(hand.location != actor)
-			hand.moveInto(actor);
 
-		if((l = deal(n, 1)) == nil) {
-			reportFailure(&cantDealNotThatManyCards, n,
-				cardsLeft());
+		if(players == nil)
+			return;
+
+		if(!players.ofKind(List))
+			players = [ players ];
+
+		if((l = deal(n, players.length)) == nil) {
+			reportFailure(&cantDealNotEnoughCards,
+				n * players.length);
 			return;
 		}
-		hand.addCards(l[1]);
-		addHand(hand);
 
-		defaultReport(&okayDeal, n);
+		for(i = 1; i <= players.length; i++) {
+			hand = players[i].getPlayingCardsHand();
+			if(hand.location != players[i])
+				hand.moveInto(players[i]);
+			addHand(hand);
+			hand.setCards(l[i]);
+		}
+
+		defaultReport(&okayDeal, n, players.length);
 	}
 
 	getCard(id) {

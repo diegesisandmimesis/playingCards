@@ -19,7 +19,6 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	isProperName = true
 	isPlural = true
 	isListedInInventory = true
-	//isListedInContents = nil
 	vocabLikelihood() {
 		if(gAction && gAction.ofKind(DealAction))
 			return(-30);
@@ -27,9 +26,12 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	}
 	hideFromAll(action) { return(true); }
 
+	getCards() { return(_cards); }
 	setCards(ar) { clearCards(); _cards += ar; }
 	addCards(ar) { _cards += ar; }
 	clearCards() { _cards.setLength(0); }
+
+	getDeck() { return(_deck); }
 
 	clear() {
 		clearCards();
@@ -146,5 +148,18 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 			self.moveInto(nil);
 
 		return(true);
+	}
+
+	handToText() {
+		local v;
+
+		if(_cards.length == 0)
+			return('nothing');
+		v = new Vector(_cards.length);
+		_cards.forEach(function(o) {
+			v.append('the ' + o.getLongName());
+		});
+
+		return(stringLister.makeSimpleList(v.toList()));
 	}
 ;
