@@ -8,9 +8,8 @@
 
 #include "playingCards.h"
 
-class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
-	initialLocationClass = Room
-
+//class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
+class PlayingCardType: PlayingCardVocab
 	cardClass = PlayingCard		// PlayingCard class our cards use
 	deckClass = CardDeck
 
@@ -25,17 +24,12 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 	rankAndSuitRegex = nil		// compiled regex for rank and suit
 	otherRegex = nil		// compiled regex for "other" cards
 
-	_discards = perInstance(new Vector())
-	_failedDiscards = perInstance(new Vector())
-	_failedNames = perInstance(new Vector())
-	_failedCards = perInstance(new Vector())
-	_examines = perInstance(new Vector())
-	_failedGeneric = perInstance(new Vector())
-
-	minSummaryLength = 1
-
-	hideFromAll(action) { return(true); }
-	//notWithIntangibleMsg = '{You/He} can\'t do that. '
+	//_discards = perInstance(new Vector())
+	//_failedDiscards = perInstance(new Vector())
+	//_failedNames = perInstance(new Vector())
+	//_failedCards = perInstance(new Vector())
+	//_examines = perInstance(new Vector())
+	//_failedGeneric = perInstance(new Vector())
 
 	// Set up our vocabulary to catch all plausible card descriptions
 	// (for cards of our card class).
@@ -333,50 +327,11 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		}
 	}
 
-	playingCardsMatchTurn = nil
-	playingCardsMatchList = perInstance(new Vector())
-
-	matchNameCommon(origTokens, adjustedTokens) {
-		local txt;
-
-		if(playingCardsMatchTurn != libGlobal.totalTurns) {
-			playingCardsMatchList.setLength(0);
-			playingCardsMatchTurn = libGlobal.totalTurns;
-		}
-
-		txt = new Vector();
-		adjustedTokens.forEach(function(o) {
-			if(dataTypeXlat(o) != TypeSString)
-				return;
-			txt.appendUnique(o);
-		});
-
-		if(txt.length == 1)
-			playingCardsMatchList.append(origTokens[1][1]);
-		else
-			playingCardsMatchList.append(txt.join(' '));
-
-		return(inherited(origTokens, adjustedTokens));
-	}
-
-	// Returns the first card name mentioned in the current action's
-	// tokens.
-	// The list is populated for each action by matchNameCommon().
-	getFirstPlayingCardMatch() {
-		if((playingCardsMatchList.length < 1)
-			|| (playingCardsMatchTurn != libGlobal.totalTurns))
-			return(nil);
-		return(playingCardsMatchList[1]);
-	}
-
 	// Returns a PlayingCard instance for the first matched card name
 	// in the current action (if any).
 	getMatchedCard() {
 		return(getCard(getFirstPlayingCardMatch()));
 	}
-
-	// Clears the first entry in the match list for this action.
-	clearMatchedCard() { playingCardsMatchList.splice(1, 1); }
 
 	playingCardsTypeCheck(id) {
 		local c, h;
@@ -385,8 +340,9 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		// card name.
 		if((c = getCard(id)) == nil) {
 			reportFailure(&invalidCardName, id);
-			rememberBadName(id);
-			clearMatchedCard();
+			//rememberBadName(id);
+			rememberPlayingCardData('badName', id);
+			clearFirstPlayingCardMatch();
 			exit;
 		}
 
@@ -396,8 +352,9 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		if(!gActor.canSee(h)) {
 			reportFailure(&cantNoCard,
 				c.getLongName());
-			rememberBadCard(c);
-			clearMatchedCard();
+			//rememberBadCard(c);
+			rememberPlayingCardData('badCard', c);
+			clearFirstPlayingCardMatch();
 			exit;
 		}
 
@@ -405,8 +362,9 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		if(h.getCarryingActor() != gActor) {
 			reportFailure(&cantNoCard,
 				c.getLongName());
-			rememberBadCard(c);
-			clearMatchedCard();
+			//rememberBadCard(c);
+			rememberPlayingCardData('badCard', c);
+			clearFirstPlayingCardMatch();
 			exit;
 		}
 	}
@@ -414,8 +372,9 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 	playingCardHandCheck(c) {
 		if(!gActor.hasPlayingCard(c)) {
 			reportFailure(&cantNoCard, c.getLongName());
-			rememberBadCard(c);
-			clearMatchedCard();
+			//rememberBadCard(c);
+			rememberPlayingCardData('badCard', c);
+			clearFirstPlayingCardMatch();
 			exit;
 		}
 	}
@@ -436,8 +395,9 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 			playingCardHandCheck(c);
 
 			reportFailure(&cantDoThatDefault, c);
-			rememberGenericFailure(c);
-			clearMatchedCard();
+			//rememberGenericFailure(c);
+			rememberPlayingCardData('genericFailure', c);
+			clearFirstPlayingCardMatch();
 
 			exit;
 		}
@@ -457,17 +417,6 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 			c = getMatchedCard();
 
 			playingCardHandCheck(c);
-/*
-			// Make sure the player has the named card in
-			// their hand.
-			if(!gActor.hasPlayingCard(c)) {
-				reportFailure(&cantNoCard,
-					c.getLongName());
-				rememberBadCard(c);
-				clearMatchedCard();
-				exit;
-			}
-*/
 		}
 		action() {
 			local c;
@@ -475,8 +424,9 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 			c = getMatchedCard();
 
 			defaultReport(&okayExamineCard, c);
-			rememberCard(c);
-			clearMatchedCard();
+			//rememberCard(c);
+			rememberPlayingCardData('card', c);
+			clearFirstPlayingCardMatch();
 		}
 	}
 
@@ -498,10 +448,11 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 			if(!gActor.hasPlayingCard(c)) {
 				// Remember that we tried to discard a
 				// card we didn't have.
-				rememberFailedDiscard(c);
+				//rememberFailedDiscard(c);
+				rememberPlayingCardData('failedDiscard', c);
 
 				// Clear the card from the match list.
-				clearMatchedCard();
+				clearFirstPlayingCardMatch();
 
 				// Complain.
 				reportFailure(&cantNoCard,
@@ -514,52 +465,18 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 
 			c = getMatchedCard();
 
-			rememberDiscard(c);
+			//rememberDiscard(c);
+			rememberPlayingCardData('discard', c);
 			gActor.getPlayingCardsHand().discard(c);
-			clearMatchedCard();
+			clearFirstPlayingCardMatch();
 
 			defaultReport(&okayDiscard, c.getLongName());
 		}
 	}
 
-	rememberFailedDiscard(card) {
-		_failedDiscards.append(card);
-		gAction.callAfterActionMain(self);
-	}
-	rememberDiscard(card) {
-		_discards.append(card);
-		gAction.callAfterActionMain(self);
-	}
-
-	rememberCard(id) {
-		_examines.append(id);
-		gAction.callAfterActionMain(self);
-	}
-	rememberGenericFailure(card) {
-		_failedGeneric.append(card);
-		gAction.callAfterActionMain(self);
-	}
-	rememberBadName(id) {
-		_failedNames.append(id);
-		gAction.callAfterActionMain(self);
-	}
-	rememberBadCard(card) {
-		_failedCards.append(card);
-		gAction.callAfterActionMain(self);
-	}
-
-	clearCardReportLists() {
-		_discards.setLength(0);
-		_failedDiscards.setLength(0);
-		_failedCards.setLength(0);
-		_failedNames.setLength(0);
-		_examines.setLength(0);
-		_failedGeneric.setLength(0);
-	}
-
 	afterActionMain() {
 		if(gAction.dobjList_.length < minSummaryLength) {
-			clearCardReportLists();
+			clearPlayingCardData();
 			return;
 		}
 		gTranscript.summarizeAction(
@@ -571,82 +488,90 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 
 				txt = new StringBuffer();
 
-				if(_discards.length > 0)
-					txt.append(summarizeDiscards(
-						_discards));
-
-				if(_failedDiscards.length > 0)
-					txt.append(summarizeDiscards(
-						_failedDiscards, true));
-
-				if(_examines.length > 0)
-					txt.append(summarizeCards(
-						_examines));
-
-				if(_failedCards.length > 0)
-					txt.append(summarizeCards(
-						_failedCards, true));
-
-				if(_failedNames.length > 0)
-					txt.append(summarizeNames(
-						_failedNames));
-
-				if(_failedGeneric.length > 0)
-					txt.append(summarizeGenericFailure(
-						_failedGeneric));
+				summarizeDiscards(txt);
+				summarizeFailedDiscards(txt);
+				summarizeExamine(txt);
+				summarizeMissingCards(txt);
+				summarizeBadNames(txt);
+				summarizeGenericFailures(txt);
 
 				return(toString(txt));
 			}
 		);
-		clearCardReportLists();
+		clearPlayingCardData();
 	}
-	summarizeDiscards(lst, failed?) {
-		local v;
-
-		v = new Vector(lst.length);
-		lst.forEach(function(o) {
-			v.append('the '  + o.getLongName());
-		});
+	summarizeFailedDiscards(txt) { summarizeDiscards(txt, true); }
+	summarizeDiscards(txt, failed?) {
+		local id, l, v;
 
 		if(failed == true)
-			return(playerActionMessages.failedDiscardList(
-				v.toList()));
+			id = 'failedDiscard';
 		else
-			return(playerActionMessages.okayDiscardList(
-				v.toList()));
-	}
-	summarizeCards(lst, failed?) {
-		local v;
+			id = 'discard';
 
-		v = new Vector(lst.length);
-		lst.forEach(function(o) {
-			v.append(o.getLongName());
+		if(((l = getPlayingCardData(id)) == nil) || (l.length < 1))
+			return;
+
+		v = new Vector(l.length);
+		l.forEach(function(o) {
+			v.append('the ' + o.getLongName());
 		});
+		v = v.toList();
+		if(failed == true)
+			txt.append(playerActionMessages.failedDiscardList(v));
+		else
+			txt.append(playerActionMessages.okayDiscardList(v));
+	}
+	summarizeMissingCards(txt) { summarizeExamine(txt, true); }
+	summarizeExamine(txt, failed?) {
+		local id, l, v;
 
 		if(failed == true)
-			return(playerActionMessages.cantExamineCardList(
-				v.toList()));
+			id = 'badCard';
 		else
-			return(playerActionMessages.okayExamineCardList(
-				v.toList()));
-	}
-	summarizeGenericFailure(lst) {
-		local v;
+			id = 'card';
 
-		v = new Vector(lst.length);
-		lst.forEach(function(o) {
+		if(((l = getPlayingCardData(id)) == nil) || (l.length < 1))
+			return;
+
+		v = new Vector(l.length);
+		l.forEach(function(o) {
 			v.append(o.getLongName());
 		});
-		return(playerActionMessages.cantDoThatDefaultList(v.toList()));
-	}
-	summarizeNames(lst) {
-		local v;
+		v = v.toList();
 
-		v = new Vector(lst.length);
-		lst.forEach(function(o) {
+		if(failed == true)
+			txt.append(playerActionMessages.cantExamineCardList(v));
+		else
+			txt.append(playerActionMessages.okayExamineCardList(v));
+	}
+	summarizeBadNames(txt) {
+		local l, v;
+
+		if(((l = getPlayingCardData('badName')) == nil)
+			|| (l.length < 1))
+			return;
+
+		v = new Vector(l.length);
+		l.forEach(function(o) {
 			v.append('<q><<o>></q>');
 		});
+		v = v.toList();
 
-		return(playerActionMessages.cantParseNames(v.toList()));
+		txt.append(playerActionMessages.cantParseNames(v));
+	}
+	summarizeGenericFailures(txt) {
+		local l, v;
+
+		if(((l = getPlayingCardData('genericFailure')) == nil)
+			|| (l.length < 1))
+			return;
+		
+		v = new Vector(l.length);
+		l.forEach(function(o) {
+			v.append(o.getLongName());
+		});
+		v = v.toList();
+		txt.append(playerActionMessages.cantDoThatDefaultList(v));
 	}
 ;

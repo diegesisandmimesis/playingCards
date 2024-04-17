@@ -8,6 +8,13 @@
 
 #include "playingCards.h"
 
+playingCardsStringListerOr: stringLister
+	listSepTwo = " or "
+	listSepEnd = ", or "
+	longListSepTo = ", or "
+	longListSepEnd = "; or "
+;
+
 modify playerActionMessages
 	// Utility methods to format strings as command lines.  Used
 	// when suggesting alternative commands in failure messages.
@@ -33,7 +40,7 @@ modify playerActionMessages
 	}
 	cantDoThatDefaultList(lst) {
 		return('{You/He} can\'t do that with the
-			<<stringLister.makeSimpleList(lst)>>. ');
+			<<playingCardsStringListerOr.makeSimpleList(lst)>>. ');
 	}
 
 	cantDiscardThat = '{You/He} can\'t discard that. '
@@ -48,9 +55,7 @@ modify playerActionMessages
 
 	cantUseHandNotHolding = '{You/He} can\'t do anything with {your/his} cards because {you/he} {are}n\'t holding them. '
 
-	cantNoCard(txt) {
-		return('{You/He} see{s} no <<txt>> here. ');
-	}
+	cantNoCard(txt) { return('{You/He} see{s} no <<txt>> here. '); }
 
 	cantUseSingleCard = '{You/He} can\'t do anything with the individual
 		cards. '
@@ -92,7 +97,7 @@ modify playerActionMessages
 		}
 	}
 	failedDiscardList(lst) {
-		return('{You/He} can\'t discard <<stringLister.makeSimpleList(lst)>> because {you/he} {is}n\'t holding <<if(lst.length > 1)>> them<<else>>it<<end>>. ');
+		return('{You/He} can\'t discard <<playingCardsStringListerOr.makeSimpleList(lst)>> because {you/he} {is}n\'t holding <<if(lst.length > 1)>> them<<else>>it<<end>>. ');
 	}
 
 	okayExamineCard(card) {
@@ -105,7 +110,7 @@ modify playerActionMessages
 	}
 	cantExamineCardList(lst) {
 		return('{You/He} see{s} no
-			<<stringLister.makeSimpleList(lst)>> here. ');
+			<<playingCardsStringListerOr.makeSimpleList(lst)>> here. ');
 	}
 	cantParseNames(lst) {
 		return('The story tried to interpret <<stringLister.makeSimpleList(lst)>> as the <<if(lst.length > 1)>>names of cards<<else>> name of a card<<end>> but failed. ');
