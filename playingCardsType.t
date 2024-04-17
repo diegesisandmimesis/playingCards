@@ -340,7 +340,6 @@ class PlayingCardType: PlayingCardVocab
 		// card name.
 		if((c = getCard(id)) == nil) {
 			reportFailure(&invalidCardName, id);
-			//rememberBadName(id);
 			rememberPlayingCardData('badName', id);
 			clearFirstPlayingCardMatch();
 			exit;
@@ -352,7 +351,6 @@ class PlayingCardType: PlayingCardVocab
 		if(!gActor.canSee(h)) {
 			reportFailure(&cantNoCard,
 				c.getLongName());
-			//rememberBadCard(c);
 			rememberPlayingCardData('badCard', c);
 			clearFirstPlayingCardMatch();
 			exit;
@@ -362,7 +360,6 @@ class PlayingCardType: PlayingCardVocab
 		if(h.getCarryingActor() != gActor) {
 			reportFailure(&cantNoCard,
 				c.getLongName());
-			//rememberBadCard(c);
 			rememberPlayingCardData('badCard', c);
 			clearFirstPlayingCardMatch();
 			exit;
@@ -372,7 +369,6 @@ class PlayingCardType: PlayingCardVocab
 	playingCardHandCheck(c) {
 		if(!gActor.hasPlayingCard(c)) {
 			reportFailure(&cantNoCard, c.getLongName());
-			//rememberBadCard(c);
 			rememberPlayingCardData('badCard', c);
 			clearFirstPlayingCardMatch();
 			exit;
@@ -395,7 +391,6 @@ class PlayingCardType: PlayingCardVocab
 			playingCardHandCheck(c);
 
 			reportFailure(&cantDoThatDefault, c);
-			//rememberGenericFailure(c);
 			rememberPlayingCardData('genericFailure', c);
 			clearFirstPlayingCardMatch();
 
@@ -424,7 +419,6 @@ class PlayingCardType: PlayingCardVocab
 			c = getMatchedCard();
 
 			defaultReport(&okayExamineCard, c);
-			//rememberCard(c);
 			rememberPlayingCardData('card', c);
 			clearFirstPlayingCardMatch();
 		}
@@ -448,7 +442,6 @@ class PlayingCardType: PlayingCardVocab
 			if(!gActor.hasPlayingCard(c)) {
 				// Remember that we tried to discard a
 				// card we didn't have.
-				//rememberFailedDiscard(c);
 				rememberPlayingCardData('failedDiscard', c);
 
 				// Clear the card from the match list.
@@ -465,7 +458,6 @@ class PlayingCardType: PlayingCardVocab
 
 			c = getMatchedCard();
 
-			//rememberDiscard(c);
 			rememberPlayingCardData('discard', c);
 			gActor.getPlayingCardsHand().discard(c);
 			clearFirstPlayingCardMatch();
@@ -474,31 +466,19 @@ class PlayingCardType: PlayingCardVocab
 		}
 	}
 
-	afterActionMain() {
-		if(gAction.dobjList_.length < minSummaryLength) {
-			clearPlayingCardData();
-			return;
-		}
-		gTranscript.summarizeAction(
-			function(x) {
-				return(x.action_ == gAction);
-			},
-			function(vec) {
-				local txt;
+	summarizePlayingCardActions(vec) {
+		local txt;
 
-				txt = new StringBuffer();
+		txt = new StringBuffer();
 
-				summarizeDiscards(txt);
-				summarizeFailedDiscards(txt);
-				summarizeExamine(txt);
-				summarizeMissingCards(txt);
-				summarizeBadNames(txt);
-				summarizeGenericFailures(txt);
+		summarizeDiscards(txt);
+		summarizeFailedDiscards(txt);
+		summarizeExamine(txt);
+		summarizeMissingCards(txt);
+		summarizeBadNames(txt);
+		summarizeGenericFailures(txt);
 
-				return(toString(txt));
-			}
-		);
-		clearPlayingCardData();
+		return(toString(txt));
 	}
 	summarizeFailedDiscards(txt) { summarizeDiscards(txt, true); }
 	summarizeDiscards(txt, failed?) {

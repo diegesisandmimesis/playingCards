@@ -117,4 +117,6 @@ modify playerActionMessages
 	}
 
 	cantTravelWithCards = '{You/He} can\'t leave the room with your playing cards.  Either drop or discard them if you want to leave. '
+
+	cardSummaryFailed = 'FIXME:  card summary failed'
 ;

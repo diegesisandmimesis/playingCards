@@ -56,8 +56,6 @@ class PlayingCardVocab: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 	// Clears the first entry in the match list for this action.
 	clearFirstPlayingCardMatch() { playingCardsMatchList.splice(1, 1); }
 
-	afterActionMain() {}
-
 	clearPlayingCardData() {
 		_playingCardDataTable.forEachAssoc(function(k, v) {
 			if(v == nil)
@@ -73,5 +71,25 @@ class PlayingCardVocab: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 			_playingCardDataTable[key] = new Vector();
 		_playingCardDataTable[key].append(txt);
 		gAction.callAfterActionMain(self);
+	}
+
+	afterActionMain() {
+		if(gAction.dobjList_.length < minSummaryLength) {
+			clearPlayingCardData();
+			return;
+		}
+		gTranscript.summarizeAction(
+			function(x) {
+				return(x.action_ == gAction);
+			},
+			function(vec) {
+				return(summarizePlayingCardActions(vec));
+			}
+		);
+		clearPlayingCardData();
+	}
+
+	summarizePlayingCardActions(vec) {
+		return(playerActionMessages.cardSummaryFailed);
 	}
 ;
