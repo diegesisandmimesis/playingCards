@@ -95,7 +95,6 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		local txt;
 
 		txt = new StringBuffer();
-		//txt.append('(THE[ ]+){0,1}(');
 		txt.append(rankShort.join('|'));
 		txt.append('|');
 		txt.append(rankLong.join('|'));
@@ -103,11 +102,8 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		txt.append(suitShort.join('|'));
 		txt.append('|');
 		txt.append(suitLong.join('|'));
-		//txt.append('){1}');
 		txt = toString(txt).toUpper();
-		//txt = toString(txt).toUpper();
 
-		//rankAndSuitRegex = new RexPattern(txt);
 		rankAndSuitRegex = new RexPattern(
 			'(THE[ ]+){0,1}%<('
 			+ txt
@@ -133,6 +129,14 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 
 	getLongRank(idx) { return(rankLong[idx]); }
 	getShortRank(idx) { return(rankShort[idx]); }
+
+	getRankName(idx, n?) {
+		local txt;
+
+		txt = getLongRank(idx);
+		if(n == 1) return(txt);
+		return(pluralNameFrom(txt));
+	}
 
 	getLongSuit(idx) { return(suitLong[idx]); }
 	getShortSuit(idx) { return(suitShort[idx]); }
@@ -430,17 +434,6 @@ class PlayingCardType: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 			c = getMatchedCard();
 
 			playingCardHandCheck(c);
-/*
-			// Make sure the player has the named card in
-			// their hand.
-			if(!gActor.hasPlayingCard(c)) {
-				reportFailure(&cantNoCard,
-					c.getLongName());
-				rememberBadCard(c);
-				clearMatchedCard();
-				exit;
-			}
-*/
 
 			reportFailure(&cantDoThatDefault, c);
 			rememberGenericFailure(c);

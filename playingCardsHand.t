@@ -30,6 +30,16 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	setCards(ar) { clearCards(); _cards += ar; }
 	addCards(ar) { _cards += ar; }
 	clearCards() { _cards.setLength(0); }
+	removeCard(c) {
+		local idx;
+
+		if((idx = getCardIndex(c)) == nil)
+			return(nil);
+
+		_cards.removeElementAt(idx);
+
+		return(true);
+	}
 
 	getDeck() { return(_deck); }
 
@@ -84,7 +94,23 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 		"\n ";
 	}
 
+	shortDescription() {
+		local txt;
+
+		if(_cards == nil)
+			return('no cards');
+		sort();
+		txt = new StringBuffer();
+		_cards.forEach(function(o) {
+			txt.append('<<o.getShortName()>> ');
+		});
+
+		return(toString(txt));
+	}
+
 	sort() {
+		if(_cards.length < 2)
+			return;
 		_cards.sort(nil, function(a, b) {
 			if(a.rank == b.rank)
 				return(a.suit - b.suit);
@@ -132,12 +158,16 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 	}
 
 	discard(card) {
-		local d, idx;
+		local d;
+		//local d, idx;
 
+		removeCard(card);
+/*
 		if((idx = getCardIndex(card)) == nil)
 			return(nil);
 
 		_cards.removeElementAt(idx);
+*/
 
 		if((d = getDiscardPile()) != nil) {
 			d.setup(_deck);

@@ -110,4 +110,6 @@ modify playerActionMessages
 	cantParseNames(lst) {
 		return('The story tried to interpret <<stringLister.makeSimpleList(lst)>> as the <<if(lst.length > 1)>>names of cards<<else>> name of a card<<end>> but failed. ');
 	}
+
+	cantTravelWithCards = '{You/He} can\'t leave the room with your playing cards.  Either drop or discard them if you want to leave. '
 ;

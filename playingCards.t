@@ -120,6 +120,25 @@
 //			nomenclature (swords, cups, pentacles, wands).
 //
 //
+// HANDLING MULTIPLE DECKS/HANDS
+//
+//	By default the player won't be able to leave the room a card
+//	deck is in if they're carrying a hand of cards dealt from that deck.
+//
+//	This behavior is controlled by CardDeck.beforeTravelCardDeck().
+//
+//	This is intended as a soft block to prevent the player from ending
+//	up with multiple hands of cards in their inventory at the same time.
+//	This is mostly due to the vocabulary problems:  card hands are
+//	disambiguated by ownership by default:  the player's cards are
+//	"your cards", versus Alice's cards being "Alice's cards", and so on.
+//	So if the player had two hands at the same time, you'd end up
+//	with "Which cards do you mean, your cards or your cards?".  This
+//	is fixable via vocabulary tweaking, but the assumption is that there
+//	probably aren't many situations in the player SHOULD have multiple
+//	hands of cards.
+//
+//
 #include <adv3.h>
 #include <en_us.h>
 
@@ -166,4 +185,9 @@ class PlayingCard: PlayingCardsObject
 	// and "2C", respectively.
 	getLongName() { return(cardType ? cardType.getLongName(self) : nil); }
 	getShortName() { return(cardType ? cardType.getShortName(self) : nil); }
+
+	// Returns rank name. For example "twos" or "sixes".  Optional arg
+	// is the number;  if it's one the singular version is returned,
+	// in all other cases the plural is given.
+	getRankName(n?) { return(cardType.getRankName(self.rank, n)); }
 ;

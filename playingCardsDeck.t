@@ -131,10 +131,16 @@ class CardDeck: PlayingCardsObject, Thing
 
 		inherited();
 
-		playingCardUnthingClass.createInstance().moveInto(self);
-		playingCardsHandUnthingClass.createInstance().moveInto(self);
+		t3RunGC();
+		if(!firstObj(playingCardUnthingClass))
+			playingCardUnthingClass.createInstance().moveInto(self);
+		if(!firstObj(playingCardsHandUnthingClass))
+			playingCardsHandUnthingClass.createInstance()
+				.moveInto(self);
 
-		obj = cardType.createInstance();
+		if((obj = firstObj(cardType)) == nil) {
+			obj = cardType.createInstance();
+		}
 		ranks = obj.rankShort.length();
 		suits = obj.suitShort.length();
 		cardCount = (ranks * suits) + obj.otherShort.length();
@@ -228,7 +234,7 @@ class CardDeck: PlayingCardsObject, Thing
 		}
 
 		for(i = 1; i <= players.length; i++) {
-			hand = players[i].getPlayingCardsHand();
+			hand = players[i].getPlayingCardsHand(self);
 			if(hand.location != players[i])
 				hand.moveInto(players[i]);
 			addHand(hand);
@@ -267,5 +273,28 @@ class CardDeck: PlayingCardsObject, Thing
 			o.clear();
 		});
 		_hands.setLength(0);
+	}
+
+	beforeTravel(actor, connector) {
+		if(!beforeTravelCardDeck(actor, connector))
+			exit;
+		inherited(actor, connector);
+	}
+
+	beforeTravelCardDeck(actor, connector) {
+		local h;
+
+		if((actor == nil) || !actor.ofKind(Actor))
+			return(true);
+
+		if((h = actor.getPlayingCardsHand(self)) == nil)
+			return(true);
+
+		if(h.getCarryingActor() != actor)
+			return(true);
+
+		reportFailure(&cantTravelWithCards);
+
+		return(nil);
 	}
 ;
