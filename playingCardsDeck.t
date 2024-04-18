@@ -241,7 +241,7 @@ class CardDeck: PlayingCardsObject, Thing
 			hand.setCards(l[i]);
 		}
 
-		defaultReport(&okayDeal, n, players.length);
+		defaultReport(&playingCardsOkayDeal, n, players.length);
 	}
 
 	getCard(id) {
@@ -293,7 +293,7 @@ class CardDeck: PlayingCardsObject, Thing
 		if(h.getCarryingActor() != actor)
 			return(true);
 
-		reportFailure(&cantTravelWithCards);
+		reportFailure(&playingCardsCantTravelWithCards);
 
 		return(nil);
 	}

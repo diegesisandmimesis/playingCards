@@ -73,6 +73,17 @@ class PlayingCardVocab: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 		gAction.callAfterActionMain(self);
 	}
 
+	playingCardError(msg, data?, key?) {
+		if(data)
+			reportFailure(msg, data);
+		else
+			reportFailure(msg);
+		if(key)
+			rememberPlayingCardData(key, data);
+		clearFirstPlayingCardMatch();
+		exit;
+	}
+
 	afterActionMain() {
 		if(gAction.dobjList_.length < minSummaryLength) {
 			clearPlayingCardData();
@@ -90,6 +101,6 @@ class PlayingCardVocab: MultiLoc, Fixture, Vaporous, PlayingCardsObject
 	}
 
 	summarizePlayingCardActions(vec) {
-		return(playerActionMessages.cardSummaryFailed);
+		return(playerActionMessages.playingCardsSummaryFailed);
 	}
 ;

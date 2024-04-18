@@ -339,39 +339,28 @@ class PlayingCardType: PlayingCardVocab
 		// See if the match actually corresponds to a
 		// card name.
 		if((c = getCard(id)) == nil) {
-			reportFailure(&invalidCardName, id);
-			rememberPlayingCardData('badName', id);
-			clearFirstPlayingCardMatch();
-			exit;
+			playingCardError(&playingCardsBadName, id, 'badName');
 		}
 
 		h = gActor.getPlayingCardsHand();
 
 		// Make sure the actor can see their cards.
 		if(!gActor.canSee(h)) {
-			reportFailure(&cantNoCard,
-				c.getLongName());
-			rememberPlayingCardData('badCard', c);
-			clearFirstPlayingCardMatch();
-			exit;
+			playingCardError(&playingCardsBadCard, c.getLongName(),
+				'badCard');
 		}
 
 		// Make sure the actor is holding their cards.
 		if(h.getCarryingActor() != gActor) {
-			reportFailure(&cantNoCard,
-				c.getLongName());
-			rememberPlayingCardData('badCard', c);
-			clearFirstPlayingCardMatch();
-			exit;
+			playingCardError(&playingCardsBadCard, c.getLongName(),
+				'badCard');
 		}
 	}
 
 	playingCardHandCheck(c) {
 		if(!gActor.hasPlayingCard(c)) {
-			reportFailure(&cantNoCard, c.getLongName());
-			rememberPlayingCardData('badCard', c);
-			clearFirstPlayingCardMatch();
-			exit;
+			playingCardError(&playingCardsBadCard, c.getLongName(),
+				'badCard');
 		}
 	}
 
@@ -390,11 +379,8 @@ class PlayingCardType: PlayingCardVocab
 
 			playingCardHandCheck(c);
 
-			reportFailure(&cantDoThatDefault, c);
-			rememberPlayingCardData('genericFailure', c);
-			clearFirstPlayingCardMatch();
-
-			exit;
+			playingCardError(&playingCardsCantDoThatDefault,
+				c.getLongName(), 'genericFailure');
 		}
 	}
 
@@ -418,8 +404,9 @@ class PlayingCardType: PlayingCardVocab
 
 			c = getMatchedCard();
 
-			defaultReport(&okayExamineCard, c);
-			rememberPlayingCardData('card', c);
+			defaultReport(&playingCardsOkayExamine,
+				c.getLongName());
+			rememberPlayingCardData('card', c.getLongName());
 			clearFirstPlayingCardMatch();
 		}
 	}
@@ -440,17 +427,8 @@ class PlayingCardType: PlayingCardVocab
 			// Make sure the player has the named card in
 			// their hand.
 			if(!gActor.hasPlayingCard(c)) {
-				// Remember that we tried to discard a
-				// card we didn't have.
-				rememberPlayingCardData('failedDiscard', c);
-
-				// Clear the card from the match list.
-				clearFirstPlayingCardMatch();
-
-				// Complain.
-				reportFailure(&cantNoCard,
-					c.getLongName());
-				exit;
+				playingCardError(&playingCardsFailedDiscard,
+					c.getLongName(), 'failedDiscard');
 			}
 		}
 		action() {
@@ -458,11 +436,12 @@ class PlayingCardType: PlayingCardVocab
 
 			c = getMatchedCard();
 
-			rememberPlayingCardData('discard', c);
-			gActor.getPlayingCardsHand().discard(c);
+			defaultReport(&playingCardsOkayDiscard,
+				c.getLongName());
+			rememberPlayingCardData('discard', c.getLongName());
 			clearFirstPlayingCardMatch();
 
-			defaultReport(&okayDiscard, c.getLongName());
+			gActor.getPlayingCardsHand().discard(c);
 		}
 	}
 
@@ -480,7 +459,9 @@ class PlayingCardType: PlayingCardVocab
 
 		return(toString(txt));
 	}
+
 	summarizeFailedDiscards(txt) { summarizeDiscards(txt, true); }
+
 	summarizeDiscards(txt, failed?) {
 		local id, l, v;
 
@@ -494,17 +475,20 @@ class PlayingCardType: PlayingCardVocab
 
 		v = new Vector(l.length);
 		l.forEach(function(o) {
-			v.append('the ' + o.getLongName());
+			v.append('the <<o>>');
 		});
 		v = v.toList();
 		if(failed == true)
-			txt.append(playerActionMessages.failedDiscardList(v));
+			txt.append(playerActionMessages
+				.playingCardsFailedDiscard(v));
 		else
-			txt.append(playerActionMessages.okayDiscardList(v));
+			txt.append(playerActionMessages
+				.playingCardsOkayDiscard(v));
 	}
+
 	summarizeMissingCards(txt) { summarizeExamine(txt, true); }
 	summarizeExamine(txt, failed?) {
-		local id, l, v;
+		local id, l;
 
 		if(failed == true)
 			id = 'badCard';
@@ -514,17 +498,14 @@ class PlayingCardType: PlayingCardVocab
 		if(((l = getPlayingCardData(id)) == nil) || (l.length < 1))
 			return;
 
-		v = new Vector(l.length);
-		l.forEach(function(o) {
-			v.append(o.getLongName());
-		});
-		v = v.toList();
-
 		if(failed == true)
-			txt.append(playerActionMessages.cantExamineCardList(v));
+			txt.append(playerActionMessages
+				.playingCardsBadCard(l));
 		else
-			txt.append(playerActionMessages.okayExamineCardList(v));
+			txt.append(playerActionMessages
+				.playingCardsOkayExamine(l));
 	}
+
 	summarizeBadNames(txt) {
 		local l, v;
 
@@ -538,20 +519,17 @@ class PlayingCardType: PlayingCardVocab
 		});
 		v = v.toList();
 
-		txt.append(playerActionMessages.cantParseNames(v));
+		txt.append(playerActionMessages.playingCardsBadName(v));
 	}
+
 	summarizeGenericFailures(txt) {
-		local l, v;
+		local l;
 
 		if(((l = getPlayingCardData('genericFailure')) == nil)
 			|| (l.length < 1))
 			return;
 		
-		v = new Vector(l.length);
-		l.forEach(function(o) {
-			v.append(o.getLongName());
-		});
-		v = v.toList();
-		txt.append(playerActionMessages.cantDoThatDefaultList(v));
+		txt.append(playerActionMessages
+			.playingCardsCantDoThatDefault(l));
 	}
 ;

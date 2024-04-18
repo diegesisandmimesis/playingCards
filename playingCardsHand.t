@@ -62,7 +62,7 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 
 	dobjFor(Discard) {
 		verify() {
-			illogical(&cantDiscardMustSpecify);
+			illogical(&playingCardsCantDiscardMustSpecify);
 		}
 	}
 

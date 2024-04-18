@@ -17,7 +17,7 @@ VerbRule(Shuffle)
 
 modify Thing
 	dobjFor(Shuffle) {
-		verify() { illogical(&cantShuffleThat); }
+		verify() { illogical(&playingCardsCantShuffleThat); }
 	}
 ;
 
@@ -45,7 +45,7 @@ modify Thing
 	dobjFor(Discard) {
 		verify() {
 			dangerous;
-			illogical(&cantDiscardThat);
+			illogical(&playingCardsCantDiscardThat);
 		}
 	}
 ;

@@ -30,21 +30,26 @@ modify playerActionMessages
 	// a card name.  For example >EXAMINE SPADES will end up here, because
 	// "spades" is part of the vocabulary, but it doesn't describe a
 	// specific card.
-	invalidCardName(n) {
-		return('The story tried to interpret <q><<toString(n)>></q> as the name of a card but failed. ');
+	playingCardsBadName(lst) {
+		if((lst != nil) && !lst.ofKind(Collection))
+			lst = [ lst ];
+		return('The story tried to interpret <<stringLister.makeSimpleList(lst)>> as the <<if(lst.length > 1)>>names of cards<<else>> name of a card<<end>> but failed. ');
 	}
 
 	// Generic failure message
+/*
 	cantDoThatDefault(id) {
 		return('{You/He} can\'t do that with the <<id>>. ');
 	}
-	cantDoThatDefaultList(lst) {
+*/
+	playingCardsCantDoThatDefault(lst) {
+		if(!lst.ofKind(Collection)) lst = [ lst ];
 		return('{You/He} can\'t do that with the
 			<<playingCardsStringListerOr.makeSimpleList(lst)>>. ');
 	}
 
-	cantDiscardThat = '{You/He} can\'t discard that. '
-	cantDiscardMustSpecify = '{You/He} must specify which card(s)
+	playingCardsCantDiscardThat = '{You/He} can\'t discard that. '
+	playingCardsCantDiscardMustSpecify = '{You/He} must specify which card(s)
 		{you/he} want{s} to discard.
 			<.p>Examples:
 			<.p>
@@ -53,9 +58,9 @@ modify playerActionMessages
 			\n\t<<formatInlineCommand('discard 2s, 3h')>>
 			<.p> '
 
-	cantUseHandNotHolding = '{You/He} can\'t do anything with {your/his} cards because {you/he} {are}n\'t holding them. '
+	playingCardsCantUseHandNotHolding = '{You/He} can\'t do anything with {your/his} cards because {you/he} {are}n\'t holding them. '
 
-	cantNoCard(txt) { return('{You/He} see{s} no <<txt>> here. '); }
+	//cantNoCard(txt) { return('{You/He} see{s} no <<txt>> here. '); }
 
 	cantUseSingleCard = '{You/He} can\'t do anything with the individual
 		cards. '
@@ -64,7 +69,7 @@ modify playerActionMessages
 
 	cantUseNoHand = '{You/he} haven\'t been dealt a hand. '
 
-	cantShuffleThat = '{You/He} can\'t shuffle that. '
+	playingCardsCantShuffleThat = '{You/He} can\'t shuffle that. '
 	okayShuffle = '{You/He} shuffle{s} the cards. '
 
 	cantDealThat = '{You/He} can only deal playing cards. '
@@ -81,42 +86,50 @@ modify playerActionMessages
 			return(cantDealNoCardsLeft);
 		return('{You/He} can\'t deal <<spellInt(n)>> cards because there aren\'t that many left in the deck.  The deck will have to be shuffled first. ');
 	}
-	okayDeal(n, m) {
+	playingCardsOkayDeal(n, m) {
 		return('{You/He} deal{s} <<spellInt(n)>> card<<((n > 1) ? 's' : '')>><<((m == 1) ? '' : ' to each player')>>. ');
 	}
 
+/*
 	okayDiscard(id) {
 		return('{You/He} discard{s} the <<id>>. ');
 	}
+*/
 
-	okayDiscardList(lst) {
+	playingCardsOkayDiscard(lst) {
+		if(!lst.ofKind(Collection)) lst = [ lst ];
 		if(lst.length > 1) {
 			return('{You/He} discard{s} <<spellInt(lst.length)>> cards: <<stringLister.makeSimpleList(lst)>>. ');
 		} else {
 			return('{You/He} discard{s} one card: <<stringLister.makeSimpleList(lst)>>. ');
 		}
 	}
-	failedDiscardList(lst) {
+
+	playingCardsFailedDiscard(lst) {
+		if((lst != nil) && !lst.ofKind(Collection)) lst = [ lst ];
 		return('{You/He} can\'t discard <<playingCardsStringListerOr.makeSimpleList(lst)>> because {you/he} {is}n\'t holding <<if(lst.length > 1)>> them<<else>>it<<end>>. ');
 	}
 
-	okayExamineCard(card) {
+/*
+	playingCardsOkayExamine(card) {
 		return('There\'s nothing special about the
 			<<card.getLongName()>>. ');
 	}
 	okayExamineCardList(lst) {
+*/
+	playingCardsOkayExamine(lst) {
+		if(!lst.ofKind(Collection)) lst = [ lst ];
 		return('There\'s nothing special about
 			the <<stringLister.makeSimpleList(lst)>>. ');
 	}
-	cantExamineCardList(lst) {
+
+	playingCardsBadCard(lst) {
+		if(!lst.ofKind(Collection)) lst = [ lst ];
 		return('{You/He} see{s} no
 			<<playingCardsStringListerOr.makeSimpleList(lst)>> here. ');
 	}
-	cantParseNames(lst) {
-		return('The story tried to interpret <<stringLister.makeSimpleList(lst)>> as the <<if(lst.length > 1)>>names of cards<<else>> name of a card<<end>> but failed. ');
-	}
 
-	cantTravelWithCards = '{You/He} can\'t leave the room with your playing cards.  Either drop or discard them if you want to leave. '
+	playingCardsCantTravelWithCards = '{You/He} can\'t leave the room with your playing cards.  Either drop or discard them if you want to leave. '
 
-	cardSummaryFailed = 'FIXME:  card summary failed'
+	playingCardsSummaryFailed = 'FIXME:  card summary failed'
 ;
