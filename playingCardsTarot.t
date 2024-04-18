@@ -23,7 +23,7 @@ class TarotCardType: PlayingCardType
 	suitLong = static [ 'swords', 'cups', 'pentacles', 'wands' ]
 
 	rankShort = static [ 'A', '2', '3', '4', '5', '6', '7', '8', '9',
-		'10', 'J', 'P', 'N', 'Q', 'K' ]
+		'10', 'P', 'N', 'Q', 'K' ]
 	rankLong = static [ 'ace', 'two', 'three', 'four', 'five', 'six',
 		'seven', 'eight', 'nine', 'ten', 'page', 'knight', 'queen',
 		'king' ]

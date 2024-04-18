@@ -64,6 +64,7 @@ class CardDeck: PlayingCardsObject, Thing
 	construct(p?) {
 		// Make sure we have a PRNG.
 		_prng = (p ? p : new PlayingCardsPRNG());
+		_initializeThing();
 	}
 
 	getPRNG() {
@@ -127,9 +128,12 @@ class CardDeck: PlayingCardsObject, Thing
 	}
 
 	initializeThing() {
-		local obj;
-
 		inherited();
+		_initializeThing();
+	}
+
+	_initializeThing() {
+		local obj;
 
 		t3RunGC();
 		if(!firstObj(playingCardUnthingClass))
@@ -143,6 +147,7 @@ class CardDeck: PlayingCardsObject, Thing
 		}
 		ranks = obj.rankShort.length();
 		suits = obj.suitShort.length();
+		others = obj.otherLong.length();
 		cardCount = (ranks * suits) + obj.otherShort.length();
 		_cardTypeInstance = obj;
 	}
@@ -159,8 +164,9 @@ class CardDeck: PlayingCardsObject, Thing
 	initializeDeck() {
 		local cls, i, j, o;
 
-		if((cls = getCardClass()) == nil)
+		if((cls = getCardClass()) == nil) {
 			return;
+		}
 			
 		_deck = new Vector(cardCount);
 
@@ -171,7 +177,7 @@ class CardDeck: PlayingCardsObject, Thing
 			}
 		}
 		for(i = 1; i <= others; i++) {
-			o = cls.createInstance(i, suits + 1);
+			o = cls.createInstance(i, 0);
 			_deck.append(o);
 		}
 

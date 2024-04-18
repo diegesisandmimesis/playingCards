@@ -209,8 +209,7 @@ class PlayingCardType: PlayingCardVocab
 
 			// Return a PlayingCard instance of the given
 			// rank and suit.
-			return(cardClass.createInstance(other,
-				suitShort.length + 1));
+			return(cardClass.createInstance(other, 0));
 		});
 
 		if((m != nil) && (m.length > 0))
@@ -318,12 +317,12 @@ class PlayingCardType: PlayingCardVocab
 
 		card = getCard(card);
 
-		if(card.suit <= suitLong.length) {
+		if(card.suit == 0) {
+			return(otherLong[card.rank]);
+		} else {
 			r = rankLong[card.rank];
 			s = suitLong[card.suit];
 			return(r + ' of ' + s);
-		} else {
-			return(otherLong[card.rank]);
 		}
 	}
 
