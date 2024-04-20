@@ -73,7 +73,7 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 		}
 	}
 	dobjFor(Deal) {
-		verify() { inaccessible(&cantDealNotDeck); }
+		verify() { inaccessible(&playingCardsCantDealNotDeck); }
 	}
 
 	describeBacks() {

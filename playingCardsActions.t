@@ -30,7 +30,7 @@ VerbRule(Deal)
 
 modify Thing
 	dobjFor(Deal) {
-		verify() { illogical(&cantDealThat); }
+		verify() { illogical(&playingCardsCantDealThat); }
 	}
 ;
 

@@ -36,21 +36,21 @@ modify playerActionMessages
 		return('The story tried to interpret <<stringLister.makeSimpleList(lst)>> as the <<if(lst.length > 1)>>names of cards<<else>> name of a card<<end>> but failed. ');
 	}
 
-	// Generic failure message
-/*
-	cantDoThatDefault(id) {
-		return('{You/He} can\'t do that with the <<id>>. ');
-	}
-*/
+	// Generic action failure message:  the noun phrase matched a valid
+	// card, but we don't have an action handler for the verb.
 	playingCardsCantDoThatDefault(lst) {
 		if(!lst.ofKind(Collection)) lst = [ lst ];
 		return('{You/He} can\'t do that with the
 			<<playingCardsStringListerOr.makeSimpleList(lst)>>. ');
 	}
 
+	// General response for >DISCARD [object] when the object isn't
+	// a card.
 	playingCardsCantDiscardThat = '{You/He} can\'t discard that. '
-	playingCardsCantDiscardMustSpecify = '{You/He} must specify which card(s)
-		{you/he} want{s} to discard.
+
+	// Message for >DISCARD without any argument.
+	playingCardsCantDiscardMustSpecify = '{You/He} must specify which
+		card(s) {you/he} want{s} to discard.
 			<.p>Examples:
 			<.p>
 			\n\t<<formatInlineCommand('discard 2s')>>
@@ -58,43 +58,37 @@ modify playerActionMessages
 			\n\t<<formatInlineCommand('discard 2s, 3h')>>
 			<.p> '
 
+	// Actor trying to do something with their cards but they're not
+	// holding them.
 	playingCardsCantUseHandNotHolding = '{You/He} can\'t do anything with {your/his} cards because {you/he} {are}n\'t holding them. '
 
-	//cantNoCard(txt) { return('{You/He} see{s} no <<txt>> here. '); }
-
-	cantUseSingleCard = '{You/He} can\'t do anything with the individual
+	playingCardsCantUseSingleCard = '{You/He} can\'t do anything with the individual
 		cards. '
-	cantTakeSingleCard = '{You/He} can\'t take individual cards.  Maybe
+	playingCardsCantTakeSingleCard = '{You/He} can\'t take individual cards.  Maybe
 		try dealing a hand instead? '
 
-	cantUseNoHand = '{You/he} haven\'t been dealt a hand. '
+	playingCardsCantUseNoHand = '{You/he} haven\'t been dealt a hand. '
 
 	playingCardsCantShuffleThat = '{You/He} can\'t shuffle that. '
-	okayShuffle = '{You/He} shuffle{s} the cards. '
+	playingCardsOkayShuffle = '{You/He} shuffle{s} the cards. '
 
-	cantDealThat = '{You/He} can only deal playing cards. '
-	cantDealNotDeck = '{You/He} can\'t deal any cards because
+	playingCardsCantDealThat = '{You/He} can only deal playing cards. '
+	playingCardsCantDealNotDeck = '{You/He} can\'t deal any cards because
 		{you/he} don\'t have the full deck. '
-	cantDealNoCount = 'How many cards do{es} {you/he} want to deal?'
-	cantDealNotThatManyCards(n, m) {
+	playingCardsCantDealNoCount = 'How many cards do{es} {you/he} want to deal?'
+	playingCardsCantDealThatManyCards(n, m) {
 		return('{You/He} can\'t deal <<spellInt(n)>> cards because there are only <<spellInt(m)>> total cards in the deck. ');
 	}
-	cantDealNoCardsLeft = '{You/He} can\'t deal any cards because there
+	playingCardsCantDealNoCardsLeft = '{You/He} can\'t deal any cards because there
 		aren\'t any left in the deck. '
-	cantDealNotEnoughCards(n) {
+	playingCardsCantDealNotEnoughCards(n) {
 		if(n == 1)
-			return(cantDealNoCardsLeft);
+			return(playingCardsCantDealNoCardsLeft);
 		return('{You/He} can\'t deal <<spellInt(n)>> cards because there aren\'t that many left in the deck.  The deck will have to be shuffled first. ');
 	}
 	playingCardsOkayDeal(n, m) {
 		return('{You/He} deal{s} <<spellInt(n)>> card<<((n > 1) ? 's' : '')>><<((m == 1) ? '' : ' to each player')>>. ');
 	}
-
-/*
-	okayDiscard(id) {
-		return('{You/He} discard{s} the <<id>>. ');
-	}
-*/
 
 	playingCardsOkayDiscard(lst) {
 		if(!lst.ofKind(Collection)) lst = [ lst ];
@@ -110,13 +104,6 @@ modify playerActionMessages
 		return('{You/He} can\'t discard <<playingCardsStringListerOr.makeSimpleList(lst)>> because {you/he} {is}n\'t holding <<if(lst.length > 1)>> them<<else>>it<<end>>. ');
 	}
 
-/*
-	playingCardsOkayExamine(card) {
-		return('There\'s nothing special about the
-			<<card.getLongName()>>. ');
-	}
-	okayExamineCardList(lst) {
-*/
 	playingCardsOkayExamine(lst) {
 		if(!lst.ofKind(Collection)) lst = [ lst ];
 		return('There\'s nothing special about

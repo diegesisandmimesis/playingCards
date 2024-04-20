@@ -11,27 +11,27 @@
 #include "playingCards.h"
 
 class PlayingCardUnthing: Unthing '(single) (individual) card' 'card'
-	notHereMsg = playerActionMessages.cantUseSingleCard
-	dobjFor(Take) { verify() { illogical(&cantTakeSingleCard); } }
+	notHereMsg = playerActionMessages.playingCardsCantUseSingleCard
+	dobjFor(Take) { verify() { illogical(&playingCardsCantTakeSingleCard); } }
 	dobjFor(Deal) {
 		verify() {
 			dangerous;
 			if((location != nil) && location.ofKind(CardDeck)) {
 				if(location.cardsLeft() < 1) {
-					illogicalNow(&cantDealNoCardsLeft);
+					illogicalNow(&playingCardsCantDealNoCardsLeft);
 				}
 			}
 		}
 		action() {
 			if((location == nil) || !location.ofKind(CardDeck))
 				return;
-			location._deal(1);
+			location.dealHandFor(1, gActor);
 		}
 	}
 ;
 
 class PlayingCardsHandUnthing: Unthing '(playing) (card) hand/cards' 'cards'
-	notHereMsg = playerActionMessages.cantUseNoHand
+	notHereMsg = playerActionMessages.playingCardsCantUseNoHand
 ;
 
 class CardDeck: PlayingCardsObject, Thing
@@ -188,7 +188,7 @@ class CardDeck: PlayingCardsObject, Thing
 		verify() {}
 		action() {
 			shuffle();
-			defaultReport(&okayShuffle);
+			defaultReport(&playingCardsOkayShuffle);
 		}
 	}
 
@@ -197,46 +197,48 @@ class CardDeck: PlayingCardsObject, Thing
 			local n;
 
 			if(gAction.numMatch == nil) {
-				illogical(&cantDealNoCount);
+				illogical(&playingCardsCantDealNoCount);
 				return;
 			}
 
 			n = gAction.numMatch.getval();
 			if(n > cardCount)
-				illogical(&cantDealNotThatManyCards, n,
+				illogical(&playingCardsCantDealThatManyCards, n,
 					cardCount);
 			if(n > cardsLeft()) {
-				illogicalNow(&cantDealNotEnoughCards, n);
+				illogicalNow(&playingCardsCantDealNotEnoughCards, n);
 			}
 		}
 		action() {
-			_deal(gAction.numMatch.getval());
+			local n, r;
+
+			n = gAction.numMatch.getval();
+
+			r = dealHandFor(n, gActor);
+			if(r < 0) {
+				reportFailure(&playingCardsCantDealNotEnoughCards, n);
+			} else if(r == 0) {
+				reportFailure(&playingCardsCantDealNoCount);
+			} else {
+				defaultReport(&playingCardsOkayDeal, n, 1);
+			}
 		}
 	}
 
 	addHand(v) { _hands.appendUnique(v); v.setDeck(self); }
 	removeHand(v) { _hands.removeElement(v); }
 
-	_deal(n) { dealHandFor(n, gActor); }
-
 	dealHandFor(n, players) {
 		local hand, i, l;
 
-		if(n == nil) {
-			reportFailure(&cantDealNoCount);
-			return;
-		}
-
-		if(players == nil)
-			return;
+		if((players == nil) || (n == nil))
+			return(0);
 
 		if(!players.ofKind(List))
 			players = [ players ];
 
 		if((l = deal(n, players.length)) == nil) {
-			reportFailure(&cantDealNotEnoughCards,
-				n * players.length);
-			return;
+			return(-1);
 		}
 
 		for(i = 1; i <= players.length; i++) {
@@ -247,7 +249,7 @@ class CardDeck: PlayingCardsObject, Thing
 			hand.setCards(l[i]);
 		}
 
-		defaultReport(&playingCardsOkayDeal, n, players.length);
+		return(1);
 	}
 
 	getCard(id) {
