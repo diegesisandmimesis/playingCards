@@ -87,7 +87,7 @@ modify playerActionMessages
 		return('{You/He} can\'t deal <<spellInt(n)>> cards because there aren\'t that many left in the deck.  The deck will have to be shuffled first. ');
 	}
 	playingCardsOkayDeal(n, m) {
-		return('{You/He} deal{s} <<spellInt(n)>> card<<((n > 1) ? 's' : '')>><<((m == 1) ? '' : ' to each player')>>. ');
+		return('{You/He} deal{s} <<spellInt(n)>> card<<((n > 1) ? 's' : '')>><<((m == 1) ? '' : ' to <<((m == 2) ? 'both' : 'each')>> player<<((m == 2) ? 's' : '')>>')>>. ');
 	}
 
 	playingCardsOkayDiscard(lst) {

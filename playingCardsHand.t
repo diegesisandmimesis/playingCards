@@ -130,6 +130,21 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 		return(_deck.getCard(id));
 	}
 
+	getCardsByRank(v) {
+		local r;
+
+		if(_cards == nil)
+			return(nil);
+
+		r = new Vector(_cards.length);
+		_cards.forEach(function(o) {
+			if(o.rank == v)
+				r.append(o);
+		});
+
+		return(r);
+	}
+
 	getCardIndex(id) {
 		local c, i;
 
