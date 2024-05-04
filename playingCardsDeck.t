@@ -278,7 +278,7 @@ class CardDeck: PlayingCardsObject, Thing
 
 	clearHands() {
 		_hands.forEach(function(o) {
-			o.clear();
+			o.throwIn();
 		});
 		_hands.setLength(0);
 	}

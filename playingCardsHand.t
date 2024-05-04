@@ -43,6 +43,8 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 
 	getDeck() { return(_deck); }
 
+	throwIn() { clear(); }
+
 	clear() {
 		clearCards();
 		moveInto(nil);
