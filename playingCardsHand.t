@@ -174,15 +174,8 @@ class PlayingCardsHand: PlayingCardsObject, PersonalThing
 
 	discard(card) {
 		local d;
-		//local d, idx;
 
 		removeCard(card);
-/*
-		if((idx = getCardIndex(card)) == nil)
-			return(nil);
-
-		_cards.removeElementAt(idx);
-*/
 
 		if((d = getDiscardPile()) != nil) {
 			d.setup(_deck);

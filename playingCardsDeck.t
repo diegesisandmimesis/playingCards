@@ -283,6 +283,11 @@ class CardDeck: PlayingCardsObject, Thing
 		_hands.setLength(0);
 	}
 
+	gather() {
+		clearHands();
+		clearDiscards();
+	}
+
 	beforeTravel(actor, connector) {
 		if(!beforeTravelCardDeck(actor, connector))
 			exit;
