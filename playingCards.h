@@ -23,4 +23,16 @@
 #error "should be in /home/user/tads/personalThing ."
 #endif // PERSONAL_THING_H
 
+#ifndef DefineIActionSub
+#define DefineIActionSub(name, cls) \
+	DefineAction(name, cls) \
+
+#endif // DefineIActionSub
+
+#define DefinePlayingCardIAction(name) \
+	DefineIActionSub(name, PlayingCardIAction)
+
+#define DefinePlayingCardTAction(name) \
+	DefineTActionSub(name, PlayingCardTAction)
+
 #define PLAYING_CARDS_H

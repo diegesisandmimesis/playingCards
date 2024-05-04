@@ -8,7 +8,13 @@
 
 #include "playingCards.h"
 
-DefineTAction(Shuffle);
+class PlayingCardAction: Action;
+
+class PlayingCardIAction: PlayingCardAction, IAction;
+class PlayingCardTAction: PlayingCardAction, TAction;
+
+//DefineTAction(Shuffle);
+DefinePlayingCardTAction(Shuffle);
 VerbRule(Shuffle)
 	'shuffle' singleDobj
 	: ShuffleAction
@@ -21,7 +27,8 @@ modify Thing
 	}
 ;
 
-DefineTAction(Deal);
+//DefineTAction(Deal);
+DefinePlayingCardTAction(Deal);
 VerbRule(Deal)
 	'deal' singleDobj | 'deal' singleNumber dobjList
 	: DealAction
@@ -34,7 +41,8 @@ modify Thing
 	}
 ;
 
-DefineTAction(Discard);
+DefinePlayingCardTAction(Discard);
+//DefineTAction(Discard);
 VerbRule(Discard)
 	'discard' dobjList
 	: DiscardAction

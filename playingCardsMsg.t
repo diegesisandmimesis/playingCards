@@ -119,4 +119,7 @@ modify playerActionMessages
 	playingCardsCantTravelWithCards = '{You/He} can\'t leave the room with your playing cards.  Either drop or discard them if you want to leave. '
 
 	playingCardsSummaryFailed = 'FIXME:  card summary failed'
+
+	playingCardsCantTouchDiscards = '{You/He} can\'t mess around with
+		the discard pile. '
 ;

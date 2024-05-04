@@ -59,4 +59,13 @@ class DiscardPile: PlayingCardsObject, Thing
 		self.moveInto(deckObj.getOutermostRoom());
 		_numberOfCards = 0;
 	}
+
+/*
+	dobjFor(Default) {
+		verify() { illogical(&playingCardsCantTouchDiscards); }
+	}
+	dobjFor(Examine) {
+		verify() {}
+	}
+*/
 ;
