@@ -401,12 +401,8 @@ class PlayingCardType: PlayingCardVocab
 		action() {
 			local c;
 
-			c = getMatchedCard();
-
-			defaultReport(&playingCardsOkayExamine,
-				c.getLongName());
+			c = playingCardAction(&playingCardsOkayExamine);
 			rememberPlayingCardData('card', c.getLongName());
-			clearFirstPlayingCardMatch();
 		}
 	}
 
@@ -433,15 +429,21 @@ class PlayingCardType: PlayingCardVocab
 		action() {
 			local c;
 
-			c = getMatchedCard();
-
-			defaultReport(&playingCardsOkayDiscard,
-				c.getLongName());
+			c = playingCardAction(&playingCardsOkayDiscard);
 			rememberPlayingCardData('discard', c.getLongName());
-			clearFirstPlayingCardMatch();
 
 			gActor.getPlayingCardsHand().discard(c);
 		}
+	}
+
+	playingCardAction(prop) {
+		local c;
+
+		c = getMatchedCard();
+		defaultReport(prop, c.getLongName());
+		clearFirstPlayingCardMatch();
+
+		return(c);
 	}
 
 	summarizePlayingCardActions(vec) {
